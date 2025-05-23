@@ -1,0 +1,27 @@
+langchain
+langchain-community
+langchain-chroma
+langchain-huggingface
+langchain-ollama
+# unstructured
+# onnxruntime
+chromadb
+pymupdf
+pytest
+pyyaml
+psutil
+python-dotenv
+tqdm
+sentence-transformers
+# hf_xet
+huggingface_hub[hf_xet]
+numpy
+pandas
+# sklearn
+# matplotlib
+# seaborn
+# torch
+# transformers
+
+# `pip install -U langchain-chroma`
+# `pip install "unstructured[md]"`
