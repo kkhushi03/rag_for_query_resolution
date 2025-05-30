@@ -1,8 +1,9 @@
 import os
 import requests
 import json
+import time
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+from urllib.parse import urljoin, quote
 from utils.helpers import use_selenium_to_get_links, infer_year_from_filename, infer_topic_from_filename
 import warnings
 
@@ -121,3 +122,105 @@ def download_from_api(endpoint, api_key, base_dir="collected_data"):
         print(f"  - API data saved: {file_name}")
     except Exception as e:
         print(f"  [!] API request failed: {e}")
+
+# Define your keywords for arXiv
+search_keywords = [
+    "AI agriculture",
+    "climate smart farming",
+    "renewable energy forecasting",
+    "environmental monitoring with ML",
+    "sustainable agriculture",
+    "agroecology",
+    "precision agriculture",
+    "greenhouse gas emissions",
+    "smart irrigation systems",
+    "crop yield prediction",
+    "soil health monitoring",
+    "agricultural robotics",
+    "drones in agriculture",
+]
+
+def download_arxiv_papers(keyword, max_results=30, base_dir="collected_data/arxiv"):
+    base_url = "http://export.arxiv.org/api/query?"
+    query = f"search_query=all:{quote(keyword)}&start=0&max_results={max_results}"
+    url = base_url + query
+
+    print(f"[+] Searching arXiv for: {keyword}")
+    try:
+        response = requests.get(url, headers=HEADERS, timeout=15)
+        response.raise_for_status()
+    except Exception as e:
+        print(f"  [!] Failed to fetch arXiv query: {e}")
+        return
+
+    soup = BeautifulSoup(response.content, "xml")
+    entries = soup.find_all("entry")
+    metadata_list = []
+
+    os.makedirs(base_dir, exist_ok=True)
+
+    for entry in entries:
+        title = entry.title.text.strip().replace("\n", " ")
+        pdf_link = ""
+        for link in entry.find_all("link"):
+            if link.get("type") == "application/pdf":
+                pdf_link = link.get("href")
+                break
+
+        if not pdf_link:
+            continue
+
+        file_name = pdf_link.split("/")[-1] + ".pdf"
+        file_path = os.path.join(base_dir, file_name)
+
+        if os.path.exists(file_path):
+            print(f"  [~] Skipped (already exists): {file_name}")
+            metadata_list.append({
+                "filename": file_name,
+                "title": title,
+                "keyword": keyword,
+                "url": pdf_link,
+                "source": "arXiv",
+                "scrape_status": "✅ (cached)"
+            })
+            continue
+
+        try:
+            start_time = time.perf_counter()
+            pdf_response = requests.get(pdf_link, headers=HEADERS, timeout=20)
+            duration = time.perf_counter() - start_time
+            pdf_response.raise_for_status()
+
+            with open(file_path, "wb") as f:
+                f.write(pdf_response.content)
+
+            print(f"  [+] Downloaded: {file_name} ({duration:.2f}s)")
+            metadata_list.append({
+                "filename": file_name,
+                "title": title,
+                "keyword": keyword,
+                "url": pdf_link,
+                "source": "arXiv",
+                "scrape_status": "✅"
+            })
+
+            # Sleep to avoid rate limits
+            time.sleep(1.5)
+
+        except Exception as e:
+            print(f"  [!] Failed to download: {file_name} → {e}")
+            metadata_list.append({
+                "filename": file_name,
+                "title": title,
+                "keyword": keyword,
+                "url": pdf_link,
+                "source": "arXiv",
+                "scrape_status": "❌"
+            })
+
+    # Save metadata
+    if metadata_list:
+        meta_path = os.path.join(base_dir, "arxiv_meta.jsonl")
+        with open(meta_path, "a", encoding="utf-8") as f:
+            for entry in metadata_list:
+                f.write(json.dumps(entry) + "\n")

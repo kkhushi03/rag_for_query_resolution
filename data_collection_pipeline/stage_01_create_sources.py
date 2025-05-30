@@ -92,6 +92,12 @@ def get_base_data_sources():
                 "data_tip": "Great for building academic knowledge bases for RAG"
             },
             {
+                "name": "arXiv",
+                "domain": "Open Access Preprints – AI, Agriculture, Environment",
+                "website": "https://arxiv.org",
+                "data_tip": "Use arXiv API to fetch paper metadata and abstracts (supports query by subject and keyword)"
+            },
+            {
                 "name": "CGIAR",
                 "domain": "Sustainable Agriculture, Food Security",
                 "website": "https://www.cgiar.org",
