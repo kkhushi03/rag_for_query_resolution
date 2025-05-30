@@ -11,7 +11,9 @@ pytest
 pyyaml
 psutil
 python-dotenv
+requests
 tqdm
+lxml
 sentence-transformers
 # hf_xet
 huggingface_hub[hf_xet]
@@ -22,6 +24,8 @@ pandas
 # seaborn
 # torch
 # transformers
+beautifulsoup4
+selenium
 
 # `pip install -U langchain-chroma`
 # `pip install "unstructured[md]"`
