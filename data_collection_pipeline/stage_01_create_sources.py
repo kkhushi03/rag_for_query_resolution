@@ -1,5 +1,7 @@
 import json
 import os
+from utils.config import CONFIG
+
 
 def get_base_data_sources():
     """Returns the initial categorized data sources as a dictionary."""
@@ -56,36 +58,6 @@ def get_base_data_sources():
         ],
         "api_access_required": [
             {
-                "name": "FAO (Food and Agriculture Organization)",
-                "domain": "Global Agriculture, Food Systems, Sustainability",
-                "website": "https://www.fao.org",
-                "data_tip": "FAOSTAT, country profiles, SDG indicators"
-            },
-            {
-                "name": "World Bank Open Data",
-                "domain": "Global Development, Agriculture, Energy",
-                "website": "https://data.worldbank.org",
-                "data_tip": "SDG indicators, agriculture value-added, renewable capacity"
-            },
-            {
-                "name": "OpenAQ",
-                "domain": "Environmental Monitoring (Air Quality)",
-                "website": "https://openaq.org",
-                "data_tip": "API-accessible air quality datasets"
-            },
-            {
-                "name": "NASA Earthdata",
-                "domain": "Satellite Imagery, Climate, Environment",
-                "website": "https://earthdata.nasa.gov",
-                "data_tip": "MODIS, Landsat, agro-environmental satellite data"
-            },
-            {
-                "name": "Semantic Scholar",
-                "domain": "Academic Papers – AI, Agriculture, Climate Science",
-                "website": "https://www.semanticscholar.org",
-                "data_tip": "Use API to pull relevant open-access paper metadata"
-            },
-            {
                 "name": "CORE",
                 "domain": "Open Access Research Papers",
                 "website": "https://core.ac.uk",
@@ -96,18 +68,6 @@ def get_base_data_sources():
                 "domain": "Open Access Preprints – AI, Agriculture, Environment",
                 "website": "https://arxiv.org",
                 "data_tip": "Use arXiv API to fetch paper metadata and abstracts (supports query by subject and keyword)"
-            },
-            {
-                "name": "CGIAR",
-                "domain": "Sustainable Agriculture, Food Security",
-                "website": "https://www.cgiar.org",
-                "data_tip": "Climate-smart agriculture datasets, publications, field studies"
-            },
-            {
-                "name": "Kaggle Datasets",
-                "domain": "Datasets – Agriculture, Energy Forecasting",
-                "website": "https://www.kaggle.com/datasets",
-                "data_tip": "Requires login + Kaggle API CLI"
             }
         ]
     }
@@ -222,7 +182,7 @@ def main():
     append_additional_sources(data_sources, additional)
     
     # Save to a JSON file
-    json_path = "data_sources/agri_data_sources.json"
+    json_path = CONFIG["data_collection_paths"]["data_sources_json"]
     save_json(data_sources, json_path)
     
     print(f"Data sources saved successfully to {json_path}")

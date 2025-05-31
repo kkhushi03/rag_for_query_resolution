@@ -1,7 +1,8 @@
 import os
 import json
-from utils.download_utils import scrape_and_download
-from utils.file_categorizer import categorize_files
+from utils.data_collection.download_utils import scrape_and_download
+from utils.data_collection.file_categorizer import categorize_files
+from utils.config import CONFIG
 
 
 def load_json(json_path):
@@ -18,7 +19,7 @@ def load_json(json_path):
         print(f"[ERROR] Unexpected error while reading JSON: {e}")
     return {}
 
-def scrape_sources(data, output_dir="collected_data"):
+def scrape_sources(data, output_dir):
     if not data.get("scrapable_or_direct_download"):
         print("[WARNING] No scrapable sources found in data.")
         return
@@ -37,7 +38,7 @@ def scrape_sources(data, output_dir="collected_data"):
             except Exception as e:
                 print(f"[ERROR] Failed to scrape {link}: {e}")
 
-def categorize_downloaded_files(output_dir="collected_data"):
+def categorize_downloaded_files(output_dir):
     try:
         categorize_files(output_dir)
         print(f"[INFO] Files in '{output_dir}' categorized successfully.")
@@ -45,8 +46,8 @@ def categorize_downloaded_files(output_dir="collected_data"):
         print(f"[ERROR] Failed to categorize files: {e}")
 
 def main():
-    json_path = "data_sources/agri_data_sources.json"
-    output_dir = "collected_data"
+    json_path = CONFIG["data_collection_paths"]["data_sources_json"]
+    output_dir = CONFIG["data_collection_paths"]["collected_data_dir"]
 
     data = load_json(json_path)
     if data:

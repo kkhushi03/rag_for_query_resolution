@@ -1,0 +1,1463 @@
+{
+  "totalHits": 1090,
+  "limit": 10,
+  "offset": 0,
+  "results": [
+    {
+      "acceptedDate": "2017-04-10T00:00:00",
+      "arxivId": null,
+      "authors": [
+        {
+          "name": "*"
+        },
+        {
+          "name": "*"
+        },
+        {
+          "name": "Beyer"
+        },
+        {
+          "name": "Blenko"
+        },
+        {
+          "name": "Buchanan"
+        },
+        {
+          "name": "Bujar"
+        },
+        {
+          "name": "Bujar"
+        },
+        {
+          "name": "Calnan"
+        },
+        {
+          "name": "Canadian Agency for Drugs and Technologies in Health (CADTH)"
+        },
+        {
+          "name": "Cherny"
+        },
+        {
+          "name": "Cole"
+        },
+        {
+          "name": "Cook"
+        },
+        {
+          "name": "Cowlrick"
+        },
+        {
+          "name": "Dean"
+        },
+        {
+          "name": "Donelan"
+        },
+        {
+          "name": "Donelan"
+        },
+        {
+          "name": "Dowding"
+        },
+        {
+          "name": "EUnetHTA"
+        },
+        {
+          "name": "European Medicines Agency (EMA)"
+        },
+        {
+          "name": "European Medicines Agency (EMA)"
+        },
+        {
+          "name": "European Medicines Agency (EMA)"
+        },
+        {
+          "name": "Fischer"
+        },
+        {
+          "name": "Food and Drug Administration (FDA)"
+        },
+        {
+          "name": "Food and Drug Administration (FDA)"
+        },
+        {
+          "name": "Garbuio"
+        },
+        {
+          "name": "Goldberg"
+        },
+        {
+          "name": "Guo"
+        },
+        {
+          "name": "Hammond"
+        },
+        {
+          "name": "Hassanzadeh"
+        },
+        {
+          "name": "Jekunen"
+        },
+        {
+          "name": "Kahneman"
+        },
+        {
+          "name": "Leong"
+        },
+        {
+          "name": "Liberti"
+        },
+        {
+          "name": "Lovallo"
+        },
+        {
+          "name": "Marangi"
+        },
+        {
+          "name": "Matheson"
+        },
+        {
+          "name": "Matheson"
+        },
+        {
+          "name": "McAuslane"
+        },
+        {
+          "name": "McAuslane"
+        },
+        {
+          "name": "McDowell"
+        },
+        {
+          "name": "McIntyre"
+        },
+        {
+          "name": "Morton"
+        },
+        {
+          "name": "Pignatti"
+        },
+        {
+          "name": "Ratliff"
+        },
+        {
+          "name": "Rogowski"
+        },
+        {
+          "name": "Salek"
+        },
+        {
+          "name": "Schnipper"
+        },
+        {
+          "name": "Scott"
+        },
+        {
+          "name": "Sharpe"
+        },
+        {
+          "name": "Strategic Decision Group (SDG)"
+        },
+        {
+          "name": "Streiner"
+        },
+        {
+          "name": "Thaler"
+        },
+        {
+          "name": "Wagner"
+        },
+        {
+          "name": "Westley"
+        },
+        {
+          "name": "World Health Organization (WHO)"
+        }
+      ],
+      "citationCount": 0,
+      "contributors": [
+        "Centre for Health Services and Clinical Research",
+        "School of Life and Medical Sciences",
+        "Department of Pharmacy, Pharmacology and Postgraduate Medicine",
+        "Public Health and Patient Safety Unit"
+      ],
+      "outputs": [
+        "https://api.core.ac.uk/v3/outputs/193356120",
+        "https://api.core.ac.uk/v3/outputs/202830335",
+        "https://api.core.ac.uk/v3/outputs/287581974"
+      ],
+      "createdDate": "2019-04-01T17:59:03",
+      "dataProviders": [
+        {
+          "id": 4786,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/4786",
+          "logo": "https://api.core.ac.uk/data-providers/4786/logo"
+        },
+        {
+          "id": 2614,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/2614",
+          "logo": "https://api.core.ac.uk/data-providers/2614/logo"
+        },
+        {
+          "id": 150,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/150",
+          "logo": "https://api.core.ac.uk/data-providers/150/logo"
+        },
+        {
+          "id": 125,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/125",
+          "logo": "https://api.core.ac.uk/data-providers/125/logo"
+        }
+      ],
+      "depositedDate": "2017-04-10T00:00:00",
+      "abstract": "Introduction: Although pharmaceutical companies, regulatory authorities, and health technology assessment (HTA) agencies have been increasingly using decision-making frameworks, it is not certain whether these enable better quality decision making. This could be addressed by formally evaluating the quality of decision-making process within those organizations. The aim of this literature review was to identify current techniques (tools, questionnaires, surveys, and studies) for measuring the quality of the decision-making process across the three stakeholders. Methods: Using MEDLINE, Web of Knowledge, and other Internet-based search engines, a literature review was performed to systematically identify techniques for assessing quality of decision making in medicines development, regulatory review, and HTA. A structured search was applied using key words and a secondary review was carried out. In addition, the measurement properties of each technique were assessed and compared. Ten Quality Decision-Making Practices (QDMPs) developed previously were then used as a framework for the evaluation of techniques identified in the review. Due to the variation in studies identified, meta-analysis was inappropriate. Results: This review identified 13 techniques, where 7 were developed specifically to assess decision making in medicines' development, regulatory review, or HTA; 2 examined corporate decision making, and 4 general decision making. Regarding how closely each technique conformed to the 10 QDMPs, the 13 techniques assessed a median of 6 QDMPs, with a mode of 3 QDMPs. Only 2 techniques evaluated all 10 QDMPs, namely the Organizational IQ and the Quality of Decision Making Orientation Scheme (QoDoS), of which only one technique, QoDoS could be applied to assess decision making of both individuals and organizations, and it possessed generalizability to capture issues relevant to companies as well as regulatory authorities. Conclusion: This review confirmed a general paucity of research in this area, particularly regarding the development and systematic application of techniques for evaluating quality decision making, with no consensus around a gold standard. This review has identified QoDoS as the most promising available technique for assessing decision making in the lifecycle of medicines and the next steps would be to further test its validity, sensitivity, and reliability.Peer reviewedFinal Published versio",
+      "documentType": "research",
+      "doi": "10.3389/fphar.2017.00189",
+      "downloadUrl": "https://core.ac.uk/download/287581974.pdf",
+      "fieldOfStudy": null,
+      "fullText": "Not available for public API users.",
+      "id": 8786938,
+      "identifiers": [
+        {
+          "identifier": "287581974",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "202830335",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "oai:pubmedcentral.nih.gov:5385334",
+          "type": "OAI_ID"
+        },
+        {
+          "identifier": "222430609",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "5385334",
+          "type": "PUBMED_ID"
+        },
+        {
+          "identifier": "193356120",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "10.3389/fphar.2017.00189",
+          "type": "DOI"
+        },
+        {
+          "identifier": "2604494750",
+          "type": "MAG_ID"
+        },
+        {
+          "identifier": "oai:uhra.herts.ac.uk:2299/21607",
+          "type": "OAI_ID"
+        }
+      ],
+      "title": "Evaluating Quality of Decision-Making Processes in Medicines' Development, Regulatory Review, and Health Technology Assessment : A Systematic Review of the Literature.",
+      "language": {
+        "code": "en",
+        "name": "English"
+      },
+      "magId": null,
+      "oaiIds": [
+        "oai:uhra.herts.ac.uk:2299/21607",
+        "oai:pubmedcentral.nih.gov:5385334"
+      ],
+      "publishedDate": "2017-01-01T00:00:00",
+      "publisher": "'Frontiers Media SA'",
+      "pubmedId": "5385334",
+      "references": [],
+      "sourceFulltextUrls": [
+        "http://uhra.herts.ac.uk/bitstream/2299/21607/1/fphar_08_00189.pdf",
+        "http://dx.doi.org/10.3389/fphar.2017.00189"
+      ],
+      "updatedDate": "2022-04-24T10:47:10",
+      "yearPublished": 2017,
+      "journals": [
+        {
+          "title": "Frontiers in Pharmacology",
+          "identifiers": [
+            "issn:1663-9812",
+            "1663-9812"
+          ]
+        }
+      ],
+      "links": [
+        {
+          "type": "download",
+          "url": "https://core.ac.uk/download/287581974.pdf"
+        },
+        {
+          "type": "reader",
+          "url": "https://core.ac.uk/reader/287581974"
+        },
+        {
+          "type": "thumbnail_m",
+          "url": "https://core.ac.uk/image/287581974/large"
+        },
+        {
+          "type": "thumbnail_l",
+          "url": "https://core.ac.uk/image/287581974/large"
+        },
+        {
+          "type": "display",
+          "url": "https://core.ac.uk/works/8786938"
+        }
+      ]
+    },
+    {
+      "acceptedDate": "2012-01-05T00:00:00",
+      "arxivId": null,
+      "authors": [
+        {
+          "name": "*"
+        },
+        {
+          "name": "*"
+        },
+        {
+          "name": "***"
+        },
+        {
+          "name": "A B\ufffdrsch-Supan"
+        },
+        {
+          "name": "A E M Van Vianen"
+        },
+        {
+          "name": "A E M Van Vianen"
+        },
+        {
+          "name": "A Lazazzara"
+        },
+        {
+          "name": "A Paulli"
+        },
+        {
+          "name": "A Walker"
+        },
+        {
+          "name": "Alessandra Lazazzara"
+        },
+        {
+          "name": "B L Hassell"
+        },
+        {
+          "name": "B Rosen"
+        },
+        {
+          "name": "D A Waldman"
+        },
+        {
+          "name": "D Fouarge"
+        },
+        {
+          "name": "E Conway"
+        },
+        {
+          "name": "E Demidenko"
+        },
+        {
+          "name": "E H Schein"
+        },
+        {
+          "name": "E L Perry"
+        },
+        {
+          "name": "G Becker"
+        },
+        {
+          "name": "H P Van Dalen"
+        },
+        {
+          "name": "I L Goldstein"
+        },
+        {
+          "name": "I R Gellatly"
+        },
+        {
+          "name": "J Arrowsmith"
+        },
+        {
+          "name": "J J Martocchio"
+        },
+        {
+          "name": "Jespen"
+        },
+        {
+          "name": "K Henkens"
+        },
+        {
+          "name": "K Henkens"
+        },
+        {
+          "name": "K Karpinska"
+        },
+        {
+          "name": "Kasia Karpinska"
+        },
+        {
+          "name": "Kene Henkens"
+        },
+        {
+          "name": "L H Ganong"
+        },
+        {
+          "name": "L M Finkelstein"
+        },
+        {
+          "name": "L R Offermann"
+        },
+        {
+          "name": "L Wallander"
+        },
+        {
+          "name": "M Armstrong-Stassen"
+        },
+        {
+          "name": "Medium"
+        },
+        {
+          "name": "O Rymkevitch"
+        },
+        {
+          "name": "P H Rossi"
+        },
+        {
+          "name": "P Mcdonald"
+        },
+        {
+          "name": "P Taylor"
+        },
+        {
+          "name": "R A Posthuma"
+        },
+        {
+          "name": "R N Butler"
+        },
+        {
+          "name": "S Jackson"
+        },
+        {
+          "name": "S Koc-Menard"
+        },
+        {
+          "name": "T D Nelson"
+        },
+        {
+          "name": "T J Maurer"
+        },
+        {
+          "name": "T N Garavan"
+        },
+        {
+          "name": "U Backes-Gellner"
+        },
+        {
+          "name": "W Bruine De Bruin"
+        },
+        {
+          "name": "W C K Chiu"
+        },
+        {
+          "name": "W Conen"
+        }
+      ],
+      "citationCount": 0,
+      "contributors": [
+        "Nederlands Interdisciplinair Demografisch Instituut (NIDI)"
+      ],
+      "outputs": [
+        "https://api.core.ac.uk/v3/outputs/11448367",
+        "https://api.core.ac.uk/v3/outputs/420814918",
+        "https://api.core.ac.uk/v3/outputs/86283266",
+        "https://api.core.ac.uk/v3/outputs/85563553",
+        "https://api.core.ac.uk/v3/outputs/574418217",
+        "https://api.core.ac.uk/v3/outputs/264656779"
+      ],
+      "createdDate": "2013-07-10T17:22:17",
+      "dataProviders": [
+        {
+          "id": 4786,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/4786",
+          "logo": "https://api.core.ac.uk/data-providers/4786/logo"
+        },
+        {
+          "id": 708,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/708",
+          "logo": "https://api.core.ac.uk/data-providers/708/logo"
+        },
+        {
+          "id": 364,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/364",
+          "logo": "https://api.core.ac.uk/data-providers/364/logo"
+        },
+        {
+          "id": 591,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/591",
+          "logo": "https://api.core.ac.uk/data-providers/591/logo"
+        }
+      ],
+      "depositedDate": "2011-01-01T00:00:00",
+      "abstract": "The core research questions addressed in this paper are: what factors influence HR professionals in deciding whether to approve training proposals for older workers? What kind of training are they more likely to recommend for older employees and in which organizational contexts? We administered three factorial surveys to 66 HR professionals in Italy. Participants made specific training decisions based on profiles of hypothetical older workers. Multilevel analyses indicated that access to training decreases strongly with age, while highly-skilled older employees with low absenteeism rates are more likely to enjoy training opportunities. In addition, older workers displaying positive performance are more likely to receive training than older workers who perform poorly, suggesting that training late in working life may serve as a reward for good performance rather than as a means of enhancing productivity. The older the HR professional evaluating training proposals, the higher the probability that older workers will be recommended for training.\n\nkeywords: training; older workers; HR professionals; factorial survey; multilevel model",
+      "documentType": "research",
+      "doi": "10.2139/ssrn.1949060",
+      "downloadUrl": "https://core.ac.uk/download/pdf/11448367.pdf",
+      "fieldOfStudy": null,
+      "fullText": "Not available for public API users.",
+      "id": 4845915,
+      "identifiers": [
+        {
+          "identifier": "10.2139/ssrn.1949060",
+          "type": "DOI"
+        },
+        {
+          "identifier": "oai:depot.knaw.nl:9889",
+          "type": "OAI_ID"
+        },
+        {
+          "identifier": "11448367",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "85563553",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "oai:tilburguniversity.edu:openaire_cris_publications/1da1dda0-525a-459f-87cc-98fe44740415",
+          "type": "OAI_ID"
+        },
+        {
+          "identifier": "oai:wo.uvt.nl:5241213",
+          "type": "OAI_ID"
+        },
+        {
+          "identifier": "420814918",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "15791814",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "oai:tilburguniversity.edu:publications/1da1dda0-525a-459f-87cc-98fe44740415",
+          "type": "OAI_ID"
+        },
+        {
+          "identifier": "86283266",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "574418217",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "264656779",
+          "type": "CORE_ID"
+        }
+      ],
+      "title": "What factors influence training opportunities for older workers? Three factorial surveys exploring the attitudes of HR professionals",
+      "language": {
+        "code": "en",
+        "name": "English"
+      },
+      "magId": null,
+      "oaiIds": [
+        "oai:tilburguniversity.edu:publications/1da1dda0-525a-459f-87cc-98fe44740415",
+        "oai:depot.knaw.nl:9889",
+        "oai:tilburguniversity.edu:openaire_cris_publications/1da1dda0-525a-459f-87cc-98fe44740415",
+        "oai:wo.uvt.nl:5241213"
+      ],
+      "publishedDate": "2011-01-01T00:00:00",
+      "publisher": "Network for Studies on Pensions, Aging and Retirement (Netspar), Tilburg",
+      "pubmedId": null,
+      "references": [],
+      "sourceFulltextUrls": [
+        "http://www.loc.gov/mods/v3",
+        "http://depot.knaw.nl/9889/"
+      ],
+      "updatedDate": "2024-06-21T10:52:06",
+      "yearPublished": 2011,
+      "journals": [
+        {
+          "title": null,
+          "identifiers": [
+            "1556-5068"
+          ]
+        }
+      ],
+      "links": [
+        {
+          "type": "download",
+          "url": "https://core.ac.uk/download/pdf/11448367.pdf"
+        },
+        {
+          "type": "reader",
+          "url": "https://core.ac.uk/reader/11448367"
+        },
+        {
+          "type": "thumbnail_m",
+          "url": "https://core.ac.uk/image/11448367/large"
+        },
+        {
+          "type": "thumbnail_l",
+          "url": "https://core.ac.uk/image/11448367/large"
+        },
+        {
+          "type": "display",
+          "url": "https://core.ac.uk/works/4845915"
+        }
+      ]
+    },
+    {
+      "acceptedDate": "",
+      "arxivId": null,
+      "authors": [
+        {
+          "name": "Kaminski, Megan"
+        }
+      ],
+      "citationCount": 0,
+      "contributors": [],
+      "outputs": [
+        "https://api.core.ac.uk/v3/outputs/267569603"
+      ],
+      "createdDate": "2019-12-14T04:19:02",
+      "dataProviders": [
+        {
+          "id": 3621,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/3621",
+          "logo": "https://api.core.ac.uk/data-providers/3621/logo"
+        }
+      ],
+      "depositedDate": "",
+      "abstract": null,
+      "doi": null,
+      "downloadUrl": "https://core.ac.uk/download/267569603.pdf",
+      "fieldOfStudy": null,
+      "fullText": "Not available for public API users.",
+      "id": 125827286,
+      "identifiers": [
+        {
+          "identifier": "267569603",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "oai:scholarworks.umt.edu:cutbank-3513",
+          "type": "OAI_ID"
+        }
+      ],
+      "title": "*",
+      "language": {
+        "code": "en",
+        "name": "English"
+      },
+      "magId": null,
+      "oaiIds": [
+        "oai:scholarworks.umt.edu:cutbank-3513"
+      ],
+      "publishedDate": "2010-01-01T08:00:00",
+      "publisher": "ScholarWorks at University of Montana",
+      "pubmedId": null,
+      "references": [],
+      "sourceFulltextUrls": [
+        "https://scholarworks.umt.edu/cgi/viewcontent.cgi?article=3513&amp;context=cutbank"
+      ],
+      "updatedDate": "2022-06-10T09:58:26",
+      "yearPublished": 2010,
+      "journals": [],
+      "links": [
+        {
+          "type": "download",
+          "url": "https://core.ac.uk/download/267569603.pdf"
+        },
+        {
+          "type": "reader",
+          "url": "https://core.ac.uk/reader/267569603"
+        },
+        {
+          "type": "thumbnail_m",
+          "url": "https://core.ac.uk/image/267569603/large"
+        },
+        {
+          "type": "thumbnail_l",
+          "url": "https://core.ac.uk/image/267569603/large"
+        },
+        {
+          "type": "display",
+          "url": "https://core.ac.uk/works/125827286"
+        }
+      ]
+    },
+    {
+      "acceptedDate": "",
+      "arxivId": null,
+      "authors": [
+        {
+          "name": "Perchik, Simon"
+        }
+      ],
+      "citationCount": 0,
+      "contributors": [],
+      "outputs": [
+        "https://api.core.ac.uk/v3/outputs/526297868",
+        "https://api.core.ac.uk/v3/outputs/374260295"
+      ],
+      "createdDate": "2021-01-29T03:40:50",
+      "dataProviders": [
+        {
+          "id": 4786,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/4786",
+          "logo": "https://api.core.ac.uk/data-providers/4786/logo"
+        },
+        {
+          "id": 21823,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/21823",
+          "logo": "https://api.core.ac.uk/data-providers/21823/logo"
+        }
+      ],
+      "depositedDate": "",
+      "abstract": null,
+      "doi": "10.17077/0021-065x.5497",
+      "downloadUrl": "https://pubs.lib.uiowa.edu/iowareview/article/id/18706/download/pdf/",
+      "fieldOfStudy": null,
+      "fullText": "Not available for public API users.",
+      "id": 129786515,
+      "identifiers": [
+        {
+          "identifier": "10.17077/0021-065x.5497",
+          "type": "DOI"
+        },
+        {
+          "identifier": "oai:iowareview:id:18706",
+          "type": "OAI_ID"
+        },
+        {
+          "identifier": "info:doi/10.17077%2f0021-065x.5497",
+          "type": "OAI_ID"
+        },
+        {
+          "identifier": "526297868",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "374260295",
+          "type": "CORE_ID"
+        }
+      ],
+      "title": "*",
+      "language": {
+        "code": "en",
+        "name": "English"
+      },
+      "magId": null,
+      "oaiIds": [
+        "info:doi/10.17077%2f0021-065x.5497",
+        "oai:iowareview:id:18706"
+      ],
+      "publishedDate": "2002-10-01T01:00:00",
+      "publisher": "'The University of Iowa'",
+      "pubmedId": null,
+      "references": [],
+      "sourceFulltextUrls": [
+        "https://pubs.lib.uiowa.edu/iowareview/article/id/18706/download/pdf/"
+      ],
+      "updatedDate": "2024-02-20T20:52:12",
+      "yearPublished": 2002,
+      "journals": [
+        {
+          "title": "The Iowa Review",
+          "identifiers": [
+            "0021-065X",
+            "2330-0361"
+          ]
+        }
+      ],
+      "links": [
+        {
+          "type": "download",
+          "url": "https://pubs.lib.uiowa.edu/iowareview/article/id/18706/download/pdf/"
+        },
+        {
+          "type": "display",
+          "url": "https://core.ac.uk/works/129786515"
+        }
+      ]
+    },
+    {
+      "acceptedDate": "",
+      "arxivId": null,
+      "authors": [
+        {
+          "name": "Perchik, Simon"
+        }
+      ],
+      "citationCount": 0,
+      "contributors": [],
+      "outputs": [
+        "https://api.core.ac.uk/v3/outputs/544026468"
+      ],
+      "createdDate": "2022-11-25T20:01:16",
+      "dataProviders": [
+        {
+          "id": 2576,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/2576",
+          "logo": "https://api.core.ac.uk/data-providers/2576/logo"
+        }
+      ],
+      "depositedDate": "",
+      "abstract": "page 4",
+      "doi": null,
+      "downloadUrl": "https://core.ac.uk/download/544026468.pdf",
+      "fieldOfStudy": null,
+      "fullText": "Not available for public API users.",
+      "id": 132263562,
+      "identifiers": [
+        {
+          "identifier": "544026468",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "oai:orb.binghamton.edu:harpurpalate-1290",
+          "type": "OAI_ID"
+        }
+      ],
+      "title": "*",
+      "language": {
+        "code": "en",
+        "name": "English"
+      },
+      "magId": null,
+      "oaiIds": [
+        "oai:orb.binghamton.edu:harpurpalate-1290"
+      ],
+      "publishedDate": "2006-07-01T08:00:00",
+      "publisher": "The Open Repository @ Binghamton (The ORB)",
+      "pubmedId": null,
+      "references": [],
+      "sourceFulltextUrls": [
+        "https://orb.binghamton.edu/cgi/viewcontent.cgi?article=1290&context=harpurpalate"
+      ],
+      "updatedDate": "2022-11-25T20:01:16",
+      "yearPublished": 2006,
+      "journals": [],
+      "links": [
+        {
+          "type": "download",
+          "url": "https://core.ac.uk/download/544026468.pdf"
+        },
+        {
+          "type": "reader",
+          "url": "https://core.ac.uk/reader/544026468"
+        },
+        {
+          "type": "thumbnail_m",
+          "url": "https://core.ac.uk/image/544026468/large"
+        },
+        {
+          "type": "thumbnail_l",
+          "url": "https://core.ac.uk/image/544026468/large"
+        },
+        {
+          "type": "display",
+          "url": "https://core.ac.uk/works/132263562"
+        }
+      ]
+    },
+    {
+      "acceptedDate": "",
+      "arxivId": null,
+      "authors": [
+        {
+          "name": "Perchik, Simon"
+        }
+      ],
+      "citationCount": 0,
+      "contributors": [],
+      "outputs": [
+        "https://api.core.ac.uk/v3/outputs/374260216",
+        "https://api.core.ac.uk/v3/outputs/526297966"
+      ],
+      "createdDate": "2021-01-29T03:40:50",
+      "dataProviders": [
+        {
+          "id": 4786,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/4786",
+          "logo": "https://api.core.ac.uk/data-providers/4786/logo"
+        },
+        {
+          "id": 21823,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/21823",
+          "logo": "https://api.core.ac.uk/data-providers/21823/logo"
+        }
+      ],
+      "depositedDate": "",
+      "abstract": null,
+      "doi": "10.17077/0021-065x.5466",
+      "downloadUrl": "https://pubs.lib.uiowa.edu/iowareview/article/id/17212/download/pdf/",
+      "fieldOfStudy": null,
+      "fullText": "Not available for public API users.",
+      "id": 129786483,
+      "identifiers": [
+        {
+          "identifier": "info:doi/10.17077%2f0021-065x.5466",
+          "type": "OAI_ID"
+        },
+        {
+          "identifier": "oai:iowareview:id:17212",
+          "type": "OAI_ID"
+        },
+        {
+          "identifier": "374260216",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "10.17077/0021-065x.5466",
+          "type": "DOI"
+        },
+        {
+          "identifier": "526297966",
+          "type": "CORE_ID"
+        }
+      ],
+      "title": "*",
+      "language": {
+        "code": "en",
+        "name": "English"
+      },
+      "magId": null,
+      "oaiIds": [
+        "info:doi/10.17077%2f0021-065x.5466",
+        "oai:iowareview:id:17212"
+      ],
+      "publishedDate": "2001-12-01T00:00:00",
+      "publisher": "'The University of Iowa'",
+      "pubmedId": null,
+      "references": [],
+      "sourceFulltextUrls": [
+        "https://pubs.lib.uiowa.edu/iowareview/article/id/17212/download/pdf/"
+      ],
+      "updatedDate": "2024-02-20T20:47:10",
+      "yearPublished": 2001,
+      "journals": [
+        {
+          "title": "The Iowa Review",
+          "identifiers": [
+            "0021-065X",
+            "2330-0361"
+          ]
+        }
+      ],
+      "links": [
+        {
+          "type": "download",
+          "url": "https://pubs.lib.uiowa.edu/iowareview/article/id/17212/download/pdf/"
+        },
+        {
+          "type": "display",
+          "url": "https://core.ac.uk/works/129786483"
+        }
+      ]
+    },
+    {
+      "acceptedDate": "",
+      "arxivId": null,
+      "authors": [
+        {
+          "name": "Perchik, Simon"
+        }
+      ],
+      "citationCount": 0,
+      "contributors": [],
+      "outputs": [
+        "https://api.core.ac.uk/v3/outputs/267569601"
+      ],
+      "createdDate": "2019-12-14T04:19:02",
+      "dataProviders": [
+        {
+          "id": 3621,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/3621",
+          "logo": "https://api.core.ac.uk/data-providers/3621/logo"
+        }
+      ],
+      "depositedDate": "",
+      "abstract": null,
+      "doi": null,
+      "downloadUrl": "https://core.ac.uk/download/267569601.pdf",
+      "fieldOfStudy": null,
+      "fullText": "Not available for public API users.",
+      "id": 74466557,
+      "identifiers": [
+        {
+          "identifier": "oai:scholarworks.umt.edu:cutbank-3509",
+          "type": "OAI_ID"
+        },
+        {
+          "identifier": "267569601",
+          "type": "CORE_ID"
+        }
+      ],
+      "title": "*",
+      "language": {
+        "code": "en",
+        "name": "English"
+      },
+      "magId": null,
+      "oaiIds": [
+        "oai:scholarworks.umt.edu:cutbank-3509"
+      ],
+      "publishedDate": "2010-01-01T08:00:00",
+      "publisher": "ScholarWorks at University of Montana",
+      "pubmedId": null,
+      "references": [],
+      "sourceFulltextUrls": [
+        "https://scholarworks.umt.edu/cgi/viewcontent.cgi?article=3509&amp;context=cutbank"
+      ],
+      "updatedDate": "2022-01-02T05:42:37",
+      "yearPublished": 2010,
+      "journals": [],
+      "links": [
+        {
+          "type": "download",
+          "url": "https://core.ac.uk/download/267569601.pdf"
+        },
+        {
+          "type": "reader",
+          "url": "https://core.ac.uk/reader/267569601"
+        },
+        {
+          "type": "thumbnail_m",
+          "url": "https://core.ac.uk/image/267569601/large"
+        },
+        {
+          "type": "thumbnail_l",
+          "url": "https://core.ac.uk/image/267569601/large"
+        },
+        {
+          "type": "display",
+          "url": "https://core.ac.uk/works/74466557"
+        }
+      ]
+    },
+    {
+      "acceptedDate": "",
+      "arxivId": null,
+      "authors": [
+        {
+          "name": "Perchik, Simon"
+        }
+      ],
+      "citationCount": 0,
+      "contributors": [],
+      "outputs": [
+        "https://api.core.ac.uk/v3/outputs/552797613"
+      ],
+      "createdDate": "2023-01-17T05:25:04",
+      "dataProviders": [
+        {
+          "id": 2576,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/2576",
+          "logo": "https://api.core.ac.uk/data-providers/2576/logo"
+        }
+      ],
+      "depositedDate": "",
+      "abstract": "page 9",
+      "doi": null,
+      "downloadUrl": "https://core.ac.uk/download/552797613.pdf",
+      "fieldOfStudy": null,
+      "fullText": "Not available for public API users.",
+      "id": 138967425,
+      "identifiers": [
+        {
+          "identifier": "oai:orb.binghamton.edu:harpurpalate-1684",
+          "type": "OAI_ID"
+        },
+        {
+          "identifier": "552797613",
+          "type": "CORE_ID"
+        }
+      ],
+      "title": "*",
+      "language": {
+        "code": "en",
+        "name": "English"
+      },
+      "magId": null,
+      "oaiIds": [
+        "oai:orb.binghamton.edu:harpurpalate-1684"
+      ],
+      "publishedDate": "2010-07-01T08:00:00",
+      "publisher": "The Open Repository @ Binghamton (The ORB)",
+      "pubmedId": null,
+      "references": [],
+      "sourceFulltextUrls": [
+        "https://orb.binghamton.edu/cgi/viewcontent.cgi?article=1684&context=harpurpalate"
+      ],
+      "updatedDate": "2023-02-13T18:27:33",
+      "yearPublished": 2010,
+      "journals": [],
+      "links": [
+        {
+          "type": "download",
+          "url": "https://core.ac.uk/download/552797613.pdf"
+        },
+        {
+          "type": "reader",
+          "url": "https://core.ac.uk/reader/552797613"
+        },
+        {
+          "type": "thumbnail_m",
+          "url": "https://core.ac.uk/image/552797613/large"
+        },
+        {
+          "type": "thumbnail_l",
+          "url": "https://core.ac.uk/image/552797613/large"
+        },
+        {
+          "type": "display",
+          "url": "https://core.ac.uk/works/138967425"
+        }
+      ]
+    },
+    {
+      "acceptedDate": "",
+      "arxivId": null,
+      "authors": [
+        {
+          "name": "Meza Camargo, Erick Manuel"
+        }
+      ],
+      "citationCount": 0,
+      "contributors": [
+        "Universitat Polit\u00e8cnica de Catalunya. Departament d'Enginyeria de Sistemes, Autom\u00e0tica i Inform\u00e0tica Industrial",
+        "Ocampo-Mart\u00ednez, Carlos",
+        "*",
+        "Ruiz Palacios, Fredy Orlando"
+      ],
+      "outputs": [
+        "https://api.core.ac.uk/v3/outputs/621369166"
+      ],
+      "createdDate": "2024-10-26T07:54:52",
+      "dataProviders": [
+        {
+          "id": 1011,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/1011",
+          "logo": "https://api.core.ac.uk/data-providers/1011/logo"
+        }
+      ],
+      "depositedDate": "",
+      "abstract": "Aquest projecte aborda el problema del Adapting Control desenvolupant un algorisme que implementa el marc d\u2019identificaci\u00f3 del Set Membership dins del problema d\u2019optimitzaci\u00f3 de la t\u00e8cnica Scenario-Based Model Predictive Control, refinant iterativament els par\u00e0metres del model per a reduir la incertesa del sistema al llarg del temps. Per a aix\u00f2, es realitza la identificaci\u00f3 d\u2019un model AutoRegresivo amb entrada ex\u00f2gena (ARX) amb els valors d\u2019entrades i sortides anteriors del sistema, incloent-hi la incertesa com un conjunt de possibles valors dels par\u00e0metres del ARX. Un nou algorisme \u00e9s proposat, en el qual el problema d\u2019optimitzaci\u00f3 t\u00e9 com a objectiu controlar el sistema mentre s\u2019identifiquen din\u00e0micament els par\u00e0metres del model ARX utilitzant la nova informaci\u00f3 obtinguda del senyal de control i la resposta del sistema, tancant el bucle mitjan\u00b8cant l\u2019actualitzaci\u00f3 del model que \u00e9s despr\u00e9s utilitzat pel controlador per al c\u00e0lcul de la seg\u00a8uent acci\u00f3 de control. A m\u00e9s a m\u00e9s, es presenten tres casos d\u2019estudi diferents per a provar aquest algorisme: un cas lineal ideal per a provar la converg\u00e8ncia dels par\u00e0metres als reals de l\u2019exemple fictici, un sistema no lineal estable per a provar l\u2019algorisme en una simulaci\u00f3 real i a m\u00e9s incloent la no linealitat com una incertesa dels par\u00e0metres i un sistema no lineal inestable amb restriccions f\u00edsiques per a provar les capacitats de l\u2019algorisme en sistemes m\u00e9s complexos. Els resultats obtinguts demostren l\u2019efic\u00e0cia de l\u2019enfocament proposat en el control dels diferents casos d\u2019estudi. El proc\u00e9s d\u2019identificaci\u00f3 \u00e9s capa\u00b8c d\u2019encarregar-se de les nolinealitats i la iteraci\u00f3 de l\u2019algorisme redueix el volum de la incertesa.Outgoin",
+      "doi": null,
+      "downloadUrl": "https://core.ac.uk/download/621369166.pdf",
+      "fieldOfStudy": null,
+      "fullText": "Not available for public API users.",
+      "id": 166026675,
+      "identifiers": [
+        {
+          "identifier": "621369166",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "oai:upcommons.upc.edu:2117/413838",
+          "type": "OAI_ID"
+        }
+      ],
+      "title": "Scenario-based MPC with adaptative set membership identification",
+      "language": {
+        "code": "en",
+        "name": "English"
+      },
+      "magId": null,
+      "oaiIds": [
+        "oai:upcommons.upc.edu:2117/413838"
+      ],
+      "publishedDate": "2024-07-12T01:00:00",
+      "publisher": "Universitat Polit\u00e8cnica de Catalunya",
+      "pubmedId": null,
+      "references": [],
+      "sourceFulltextUrls": [
+        "https://upcommons.upc.edu/bitstream/2117/413838/2/Erick_Manuel_Meza_Camargo_TFM.pdf"
+      ],
+      "updatedDate": "2024-10-26T07:54:52",
+      "yearPublished": 2024,
+      "journals": [],
+      "links": [
+        {
+          "type": "download",
+          "url": "https://core.ac.uk/download/621369166.pdf"
+        },
+        {
+          "type": "reader",
+          "url": "https://core.ac.uk/reader/621369166"
+        },
+        {
+          "type": "thumbnail_m",
+          "url": "https://core.ac.uk/image/621369166/large"
+        },
+        {
+          "type": "thumbnail_l",
+          "url": "https://core.ac.uk/image/621369166/large"
+        },
+        {
+          "type": "display",
+          "url": "https://core.ac.uk/works/166026675"
+        }
+      ]
+    },
+    {
+      "acceptedDate": "2009-08-21T00:00:00",
+      "arxivId": null,
+      "authors": [
+        {
+          "name": "!"
+        },
+        {
+          "name": "!&quot"
+        },
+        {
+          "name": "# !$"
+        },
+        {
+          "name": "# &apos"
+        },
+        {
+          "name": "# *6a "
+        },
+        {
+          "name": "# *?* $"
+        },
+        {
+          "name": "# *@5"
+        },
+        {
+          "name": "# *@? "
+        },
+        {
+          "name": "##(*++61"
+        },
+        {
+          "name": "$ %#&amp"
+        },
+        {
+          "name": "$ &quot"
+        },
+        {
+          "name": "$!&quot"
+        },
+        {
+          "name": "$/)11&amp"
+        },
+        {
+          "name": "% &quot"
+        },
+        {
+          "name": "&amp"
+        },
+        {
+          "name": "(*++?&quot"
+        },
+        {
+          "name": "*"
+        },
+        {
+          "name": "* ++@. *66 "
+        },
+        {
+          "name": "* 5@ 9#:&amp"
+        },
+        {
+          "name": "* 6+"
+        },
+        {
+          "name": "* @+"
+        },
+        {
+          "name": "* @5 &amp"
+        },
+        {
+          "name": "* @6c*?0# /:&gt"
+        },
+        {
+          "name": "* A0"
+        },
+        {
+          "name": "*@"
+        },
+        {
+          "name": "*@"
+        },
+        {
+          "name": "*@0 "
+        },
+        {
+          "name": "*@0 * ++a"
+        },
+        {
+          "name": "/ 19&gt"
+        },
+        {
+          "name": "/ Dc D&amp"
+        },
+        {
+          "name": "// #h"
+        },
+        {
+          "name": "=/H"
+        },
+        {
+          "name": "Andrew Steven"
+        },
+        {
+          "name": "C#9&amp"
+        },
+        {
+          "name": "C&quot"
+        },
+        {
+          "name": "G --$ C I &amp"
+        },
+        {
+          "name": "G = $ 1 "
+        },
+        {
+          "name": "J!###&quot"
+        }
+      ],
+      "citationCount": 0,
+      "contributors": [
+        ""
+      ],
+      "outputs": [
+        "https://api.core.ac.uk/v3/outputs/341422798",
+        "https://api.core.ac.uk/v3/outputs/349785041",
+        "https://api.core.ac.uk/v3/outputs/28971344",
+        "https://api.core.ac.uk/v3/outputs/28961792"
+      ],
+      "createdDate": "2015-02-08T15:48:06",
+      "dataProviders": [
+        {
+          "id": 4786,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/4786",
+          "logo": "https://api.core.ac.uk/data-providers/4786/logo"
+        },
+        {
+          "id": 647,
+          "name": "",
+          "url": "https://api.core.ac.uk/v3/data-providers/647",
+          "logo": "https://api.core.ac.uk/data-providers/647/logo"
+        }
+      ],
+      "depositedDate": "2009-01-01T00:00:00",
+      "abstract": null,
+      "documentType": "research",
+      "doi": "10.2139/ssrn.1371139",
+      "downloadUrl": "https://core.ac.uk/download/28971344.pdf",
+      "fieldOfStudy": "sociology",
+      "fullText": "Not available for public API users.",
+      "id": 8982160,
+      "identifiers": [
+        {
+          "identifier": "1979242182",
+          "type": "MAG_ID"
+        },
+        {
+          "identifier": "28961792",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "10.3366/e1364980909000560",
+          "type": "DOI"
+        },
+        {
+          "identifier": "341422798",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "oai:pure.ed.ac.uk:publications/aa21ac4d-5092-42bb-8934-12faabf6e898",
+          "type": "OAI_ID"
+        },
+        {
+          "identifier": "349785041",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "28971344",
+          "type": "CORE_ID"
+        },
+        {
+          "identifier": "oai:pure.ed.ac.uk:publications/1d8bd8ad-c675-481a-ba11-3ac9f40d50ed",
+          "type": "OAI_ID"
+        },
+        {
+          "identifier": "10.2139/ssrn.1371139",
+          "type": "DOI"
+        }
+      ],
+      "title": "Accessoriness and Security over Land",
+      "magId": "1979242182",
+      "oaiIds": [
+        "oai:pure.ed.ac.uk:publications/1d8bd8ad-c675-481a-ba11-3ac9f40d50ed",
+        "oai:pure.ed.ac.uk:publications/aa21ac4d-5092-42bb-8934-12faabf6e898"
+      ],
+      "publishedDate": "2009-01-01T00:00:00",
+      "publisher": "'Elsevier BV'",
+      "pubmedId": null,
+      "references": [],
+      "sourceFulltextUrls": [
+        "https://www.pure.ed.ac.uk/ws/files/11940278/STEVEN_A_Accessoriness_and_Security_over_Land.pdf"
+      ],
+      "updatedDate": "2022-04-24T22:14:05",
+      "yearPublished": 2009,
+      "journals": [
+        {
+          "title": null,
+          "identifiers": [
+            "1556-5068"
+          ]
+        }
+      ],
+      "links": [
+        {
+          "type": "download",
+          "url": "https://core.ac.uk/download/28971344.pdf"
+        },
+        {
+          "type": "reader",
+          "url": "https://core.ac.uk/reader/28971344"
+        },
+        {
+          "type": "thumbnail_m",
+          "url": "https://core.ac.uk/image/28971344/large"
+        },
+        {
+          "type": "thumbnail_l",
+          "url": "https://core.ac.uk/image/28971344/large"
+        },
+        {
+          "type": "display",
+          "url": "https://core.ac.uk/works/8982160"
+        }
+      ]
+    }
+  ],
+  "searchId": "94b805d8ba195a7ac0c929ab47776fdc"
+}

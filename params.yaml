@@ -1,3 +1,11 @@
+data_collection_paths:
+  data_sources_json: "artifacts/data/data_sources/agri_data_sources.json"
+  collected_data_dir: "artifacts/data/collected_data"
+  arxiv_dir: "artifacts/data/collected_data/arxiv"
+  core_json_files:
+    - "artifacts/data/data_sources/core_data_1748674199.json"
+    - "artifacts/data/data_sources/core_data_1748675418.json"
+
 LOG_PATH: "logs"
 GAME_RULES_DATA_PATH: "data/"
 CHROMA_DB_PATH: "chromadb"
