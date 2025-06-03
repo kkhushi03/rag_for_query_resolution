@@ -18,6 +18,8 @@ LOG_PATH = CONFIG["LOG_PATH"]
 DATA_PATH = CONFIG["DATA_PATH"]
 CHROMA_DB_PATH = CONFIG["CHROMA_DB_PATH"]
 CHUNK_SIZE = CONFIG["CHUNK_SIZE"]
+CHUNK_LOWER_LIMIT = CONFIG["CHUNK_LOWER_LIMIT"]
+CHUNK_UPPER_LIMIT = CONFIG["CHUNK_UPPER_LIMIT"]
 CHUNK_OVERLAP = CONFIG["CHUNK_OVERLAP"]
 BATCH_SIZE = CONFIG["BATCH_SIZE"]
 
@@ -114,7 +116,7 @@ def calc_chunk_ids(chunks, data_dir, logger):
             source = chunk.metadata.get("source")
             page = chunk.metadata.get("page")
             
-            logger.info("[Part 12] Normalizing & Standardizing paths, for cross-platform consistency...")
+            # logger.info("[Part 11.1] Normalizing & Standardizing paths, for cross-platform consistency...")
             norm_source = os.path.normpath(source)
             rel_source = os.path.relpath(norm_source, data_dir).replace("\\", "/")
             
@@ -126,41 +128,56 @@ def calc_chunk_ids(chunks, data_dir, logger):
             else:
                 curr_chunk_idx = 0
             
-            logger.info("[Part 13] Calculating new chunk IDs...")
+            # logger.info("[Part 11.2] Calculating new chunk IDs...")
             chunk_id = (f"{curr_page_id}:{curr_chunk_idx}")
             last_page_id = curr_page_id
             
-            logger.info("[Part 14] Adding chunk IDs to metadata...")
+            # logger.info("[Part 11.3] Adding chunk IDs to metadata...")
             chunk.metadata["chunk_id"] = chunk_id
         
-        logger.info("[Part 15] Chunk IDs calculated successfully.")
+        logger.info("[Part 12] Chunk IDs calculated successfully.")
         return chunks
     except Exception as e:
         logger.error(f"Error calculating chunk IDs: {e}")
         logger.debug(traceback.format_exc())
         return chunks
 
-def save_to_chroma_db(chunks: list[Document], chroma_db_dir, data_dir, batch_size, logger):
+def filter_and_embed_chunks(chunks: List[Document], lower_limit, upper_limit, logger) -> List[Document]:
+    logger.info("[Part 14.6.1] Applying custom filtering on chunks before ingestion...")
+    
+    filtered = []
+    for chunk in chunks:
+        content = chunk.page_content.strip()
+        if lower_limit < len(content) < upper_limit:  # only chunks between lower_limit and upper_limit characters
+            filtered.append(chunk)
+        else:
+            logger.warning(f"[Part 14.4.2(a)] Filtered out chunk (len={len(content)}): {chunk.metadata.get('chunk_id')}")
+    
+    logger.info(f"[Part 14.6.2(a)] Chunks remaining before filter: {len(chunks)}")
+    logger.info(f"[Part 14.6.2(b)] Chunks remaining after filter: {len(filtered)}")
+    return filtered
+
+def save_to_chroma_db(chunks: list[Document], chroma_db_dir, data_dir, lower_limit, upper_limit, batch_size, logger):
     try:
-        logger.info("[Part 16] Saving chunks to Chroma DB.....")
+        logger.info("[Part 13] Saving chunks to Chroma DB.....")
         
         # load the existing db
         db = Chroma(
             embedding_function=embedding_func(),
             persist_directory=chroma_db_dir,
         )
-        logger.info(f"[Part 17.1] Loading existing DB from path: {chroma_db_dir}.....")
+        logger.info(f"[Part 14.1] Loading existing DB from path: {chroma_db_dir}.....")
         
         # calculate "page:chunk" IDs
         # Step 1: Assign chunk IDs
-        chunks_with_ids = calc_chunk_ids(chunks, data_dir)
-        logger.info(f"[Part 17.2] Calculated chunk IDs for total {len(chunks_with_ids)} chunks")
+        chunks_with_ids = calc_chunk_ids(chunks, data_dir, logger)
+        logger.info(f"[Part 14.2] Calculated chunk IDs for total {len(chunks_with_ids)} chunks")
         
         # add/update the docs
         # Step 2: Get existing IDs from the DB
         existing_items = db.get(include=[]) # IDs are always included by default
         existing_ids = set(existing_items["ids"])
-        logger.info(f"[Part 17.3] No. of existing items (i.e. docs) in the db: {len(existing_ids)}")
+        logger.info(f"[Part 14.3] No. of existing items (i.e. docs) in the db: {len(existing_ids)}")
         
         # only add docs that don't exist in the db
         # Step 3: Filter only new chunks
@@ -168,9 +185,9 @@ def save_to_chroma_db(chunks: list[Document], chroma_db_dir, data_dir, batch_siz
         for chunk in chunks_with_ids:
             if chunk.metadata["chunk_id"] not in existing_ids:
                 new_chunks.append(chunk)
-        logger.info(f"[Part 17.4] No. of new chunks to add: {len(new_chunks)}")
+        logger.info(f"[Part 14.4] No. of new chunks to add: {len(new_chunks)}")
         
-        # Step 4: Safety Net — remove duplicates within `new_chunks`
+        # Step 4: Safety Net — remove duplicates within `new_chunks` -> Deduplicate
         seen_ids = set()
         unique_new_chunks = []
         for chunk in new_chunks:
@@ -178,21 +195,25 @@ def save_to_chroma_db(chunks: list[Document], chroma_db_dir, data_dir, batch_siz
             if cid not in seen_ids:
                 seen_ids.add(cid)
                 unique_new_chunks.append(chunk)
-        logger.info(f"[Part 17.5] No. of unique new chunks to add, after deduplication: {len(unique_new_chunks)}")
+        logger.info(f"[Part 14.5] No. of unique new chunks to add, after deduplication: {len(unique_new_chunks)}")
         
-        # Step 5: Ingest in batches
+        # Step 5: Filter out empty content chunks
+        filtered_chunks = filter_and_embed_chunks(unique_new_chunks, lower_limit, upper_limit, logger)
+        
+        # Step 6: Ingest in batches
         if unique_new_chunks:
-            logger.info("[Part 17.6(a)] Ingesting new chunks to DB in batches...")
+            logger.info("[Part 14.7(a)] Ingesting new filtered chunks to DB in batches...")
             process_in_batches(
-                documents=unique_new_chunks,
+                # documents=unique_new_chunks,
+                documents=filtered_chunks,
                 batch_size=batch_size,
                 ingest_fn=lambda batch: db.add_documents(batch, ids=[doc.metadata["chunk_id"] for doc in batch]),
                 logger=logger
             )
         else:
-            logger.info("[Part 17.6(b)] No new unique chunks to add to DB")
+            logger.info("[Part 14.7(b)] No valid (non-empty) new unique chunks to add to DB")
         
-        logger.info("[Part 18] Chunks saved to Chroma DB successfully")        
+        logger.info("[Part 15] Chunks saved to Chroma DB successfully")        
     except Exception as e:
         logger.error(f"Error saving to Chroma DB: {e}")
         logger.debug(traceback.format_exc())
@@ -202,7 +223,7 @@ def clear_database(chroma_db_dir):
     if os.path.exists(chroma_db_dir):
         shutil.rmtree(chroma_db_dir)
 
-def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, data_dir=DATA_PATH, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, batch_size=BATCH_SIZE):
+def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, data_dir=DATA_PATH, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, batch_size=BATCH_SIZE):
     try:
         logger = setup_logger("populate_db_logger", LOG_FILE)
         logger.info(" ")
@@ -210,7 +231,7 @@ def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, data_dir=DATA_PAT
         
         # check if the db should be cleared (using the --clear flag)
         if reset:
-            logger.info("[Part 19] (RESET DB) Clearing the database...")
+            logger.info("[Part 16] (RESET DB) Clearing the database...")
             clear_database(chroma_db_dir)
         
         # create (or update) the db
@@ -229,7 +250,7 @@ def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, data_dir=DATA_PAT
             return
         # logger.info(f"First chunk: {chunks[0]}")
         
-        save_to_chroma_db(chunks, chroma_db_dir, data_dir, batch_size, logger)
+        save_to_chroma_db(chunks, chroma_db_dir, data_dir, lower_limit, upper_limit, batch_size, logger)
         logger.info("--------++++++++DB population stage successfully completed.")
         logger.info(" ")
     except Exception as e:

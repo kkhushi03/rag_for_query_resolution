@@ -163,5 +163,9 @@ cython_debug/
 
 artifacts/data/collected_data/
 artifacts/data.zip
+
 # just for now
 artifacts/data/excels/
+artifacts/data/core/
+artifacts/data/arxiv/
+artifacts/data/pdfs

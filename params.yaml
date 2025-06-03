@@ -13,8 +13,10 @@ CHROMA_DB_PATH: "chromadb"
 EVALUATION_DATA_PATHS: "data/evaluation_data/questions.json"
 RESULTS_CSV_PATH: "artifacts/results/evaluation_results.csv"
 
-CHUNK_SIZE: 500
+CHUNK_SIZE: 512
 CHUNK_OVERLAP: 50
+CHUNK_LOWER_LIMIT: 100
+CHUNK_UPPER_LIMIT: 1000
 BATCH_SIZE: 64
 K: 5
 N: 3
