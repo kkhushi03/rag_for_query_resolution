@@ -7,19 +7,18 @@ data_collection_paths:
     - "artifacts/data/data_sources/core_data_1748675418.json"
 
 LOG_PATH: "logs"
-GAME_RULES_DATA_PATH: "data/"
+DATA_PATH: "artifacts/data/collected_data/"
 CHROMA_DB_PATH: "chromadb"
 
-EVALUATION_DATA_PATHS: 
-  - "data/evaluation_data/questions_01.json"
-  - "data/evaluation_data/questions_02.json"
+EVALUATION_DATA_PATHS: "data/evaluation_data/questions.json"
 RESULTS_CSV_PATH: "artifacts/results/evaluation_results.csv"
 
-CHUNK_SIZE: 800
-CHUNK_OVERLAP: 80
+CHUNK_SIZE: 500
+CHUNK_OVERLAP: 50
 BATCH_SIZE: 64
 K: 5
+N: 3
 
 # EMBEDDING_MODEL: "sentence-transformers/all-MiniLM-L6-v2"
 EMBEDDING_MODEL: "BAAI/bge-small-en"
-GENERATION_MODEL: "llama3.2"
+LOCAL_LLM: "llama3.2"
