@@ -7,7 +7,10 @@ data_collection_paths:
     - "artifacts/data/data_sources/core_data_1748675418.json"
 
 LOG_PATH: "logs"
-DATA_PATH: "artifacts/data/collected_data/"
+SOURCE_DATA_PATH: "artifacts/data/collected_data/"
+SOURCE_DIRS: ["arxiv", "pdfs", "core"]
+DATA_PATH: "artifacts/data/grouped_data/"
+# GROUPED_DIRS: ["group_1"]
 CHROMA_DB_PATH: "chromadb"
 
 EVALUATION_DATA_PATHS: "data/evaluation_data/questions.json"
@@ -16,11 +19,12 @@ RESULTS_CSV_PATH: "artifacts/results/evaluation_results.csv"
 CHUNK_SIZE: 512
 CHUNK_OVERLAP: 50
 CHUNK_LOWER_LIMIT: 100
-CHUNK_UPPER_LIMIT: 1000
+CHUNK_UPPER_LIMIT: 500
 BATCH_SIZE: 64
 K: 5
 N: 3
 
+ENCODING_MODEL: "cl100k_base"
 # EMBEDDING_MODEL: "sentence-transformers/all-MiniLM-L6-v2"
 EMBEDDING_MODEL: "BAAI/bge-small-en"
 LOCAL_LLM: "llama3.2"
