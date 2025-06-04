@@ -10,7 +10,7 @@ LOG_PATH: "logs"
 SOURCE_DATA_PATH: "artifacts/data/collected_data/"
 SOURCE_DIRS: ["arxiv", "pdfs", "core"]
 DATA_PATH: "artifacts/data/grouped_data/"
-GROUPED_DIRS: ["group_1"]
+# GROUPED_DIRS: ["group_1"]
 CHROMA_DB_PATH: "chromadb"
 
 EVALUATION_DATA_PATHS: "data/evaluation_data/questions.json"
