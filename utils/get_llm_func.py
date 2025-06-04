@@ -1,12 +1,23 @@
 from utils.config import CONFIG
+import tiktoken
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_community.embeddings import GPT4AllEmbeddings
 from langchain_ollama import OllamaLLM
 
 
+ENCODING_MODEL = CONFIG["ENCODING_MODEL"]
 EMBEDDING_MODEL = CONFIG["EMBEDDING_MODEL"]
 LOCAL_LLM = CONFIG["LOCAL_LLM"]
 
+
+def encoding_func():
+    encoding = tiktoken.get_encoding("cl100k_base")
+    return encoding
+
+def num_tokens(text: str) -> int:
+    encoding = encoding_func()
+    # returns the no. of tokens in a text
+    return len(encoding.encode(text))
 
 def embedding_function_hf():
     model_kwargs = {"device": "cpu"}

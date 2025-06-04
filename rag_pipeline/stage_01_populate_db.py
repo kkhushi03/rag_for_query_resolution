@@ -1,11 +1,12 @@
 import os
 import traceback
 import shutil
-import argparse
 from tqdm import tqdm
+import gc
+from pathlib import Path
 from utils.config import CONFIG
 from utils.logger import setup_logger
-from utils.get_llm_func import embedding_func
+from utils.get_llm_func import embedding_func, num_tokens
 from typing import List
 from langchain.schema import Document
 from langchain_community.document_loaders import PyMuPDFLoader
@@ -13,9 +14,14 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 
 
+# configurations
 LOG_PATH = CONFIG["LOG_PATH"]
+LOG_PATH = Path(LOG_PATH)
 DATA_PATH = CONFIG["DATA_PATH"]
+DATA_PATH = Path(DATA_PATH)
+GROUPED_DIRS = CONFIG["GROUPED_DIRS"]
 CHROMA_DB_PATH = CONFIG["CHROMA_DB_PATH"]
+
 CHUNK_SIZE = CONFIG["CHUNK_SIZE"]
 CHUNK_LOWER_LIMIT = CONFIG["CHUNK_LOWER_LIMIT"]
 CHUNK_UPPER_LIMIT = CONFIG["CHUNK_UPPER_LIMIT"]
@@ -28,36 +34,86 @@ os.makedirs(LOG_DIR, exist_ok=True)  # Create the logs directory if it doesn't e
 LOG_FILE = os.path.join(LOG_DIR, "stage_01_populate_db.log")
 
 
-def load_docs(data_dir, logger) -> List[Document]:
+def load_docs(base_data_path, logger) -> List[Document]:
     try:
         logger.info("[Part 01] Loading docs from the directory.....")
         
         all_docs = []
         pdf_files = []
-        logger.info(f"[Part 02] Scanning directory.....: {data_dir}")
+        logger.info(f"[Part 02] Scanning directory.....: {base_data_path}")
         
-        # Collect all PDF paths (including subfolders)
-        for root, dirs, files in os.walk(data_dir):
-            for file in files:
-                if file.lower().endswith(".pdf"):
-                    pdf_files.append(os.path.join(root, file))
-                    logger.info(f"[Part 03] Loading.....: {len(pdf_files)}")
-                    
-                    for file_path in tqdm(pdf_files, desc="Loading PDFs"):
-                        try:
-                            loader = PyMuPDFLoader(file_path)
-                            docs = loader.load()
-                            all_docs.extend(docs)
-                        except Exception as inner_e:
-                            logger.warning(f"Failed to load {file_path}: {inner_e}")
+        try:
+            # Collect all PDF paths (including subfolders)
+            # Loop 1: directory walk
+            for root, _, files in os.walk(base_data_path):
+                # Loop 2: files in that folder
+                for file in files:
+                    if file.lower().endswith(".pdf"):
+                        root_file_path = os.path.join(root, file)
+                        pdf_files.append(root_file_path)
+                        logger.debug(f"Found PDF file: {root_file_path}")
+            
+            logger.info(f"[Part 03] Loading.....: {len(pdf_files)}")
+            
+            # Loop 3: process all PDFs
+            for file_path in tqdm(pdf_files, desc="Loading PDFs"):
+                try:
+                    loader = PyMuPDFLoader(file_path)
+                    docs = loader.load()
+                    all_docs.extend(docs)
+                except Exception as inner_e:
+                    logger.warning(f"Failed to load {file_path}: {inner_e}")
+                    logger.debug(traceback.format_exc())
+                    continue
+        finally:
+            gc.collect()  # Free memory after each file
         
         logger.info(f"[Part 04] Loaded {len(all_docs)} documents successfully.")
-        
         return all_docs
     except Exception as e:
         logger.error(f"Error loading documents: {e}")
         logger.debug(traceback.format_exc())
         return []
+
+# def load_docs(base_data_path: Path, grouped_dirs: List[str], logger) -> List[Document]:
+#     try:
+#         logger.info("[Part 01] Loading docs from selected grouped directories.....")
+#         all_docs = []
+#         total_pdfs = 0
+
+#         for group_dir in grouped_dirs:
+#             full_group_path = base_data_path / group_dir
+#             logger.info(f"[Part 02] Scanning directory.....: {full_group_path}")
+
+#             if not full_group_path.exists():
+#                 logger.warning(f"[Part 02.1] Directory does not exist: {full_group_path}")
+#                 continue
+
+#             pdf_files = list(full_group_path.rglob("*.pdf"))
+#             total_pdfs += len(pdf_files)
+#             logger.info(f"[Part 02.2] Found {len(pdf_files)} PDFs in {group_dir}")
+            
+#             logger.info(f"[Part 03] Loading.....: {len(pdf_files)}")
+#             for pdf_file in tqdm(pdf_files, desc=f"Loading PDFs from {group_dir}"):
+#                 try:
+#                     loader = PyMuPDFLoader(str(pdf_file))
+#                     docs = loader.load()
+#                     all_docs.extend(docs)
+#                 except Exception as inner_e:
+#                     logger.warning(f"Failed to load {pdf_file}: {inner_e}")
+#                     logger.debug(traceback.format_exc())
+#                     continue
+#                 finally:
+#                     gc.collect() # Free memory after each file
+
+#         logger.info(f"[Part 04.1] Total PDFs processed: {total_pdfs}")
+#         logger.info(f"[Part 04.2] Total documents loaded: {len(all_docs)}")
+#         return all_docs
+
+#     except Exception as e:
+#         logger.error(f"[Part 05] Error during document loading: {e}")
+#         logger.debug(traceback.format_exc())
+#         return []
 
 def flatten_docs(docs: List, logger) -> List[Document]:
     try:
@@ -83,8 +139,10 @@ def split_docs(docs: List[Document], chunk_size: int, chunk_overlap: int, logger
             # length_function=len,
             # is_separator_regex=False,
         )
+        logger.info(f"[Part 08.1] Splitting {len(docs)} documents into chunks (size={chunk_size}, overlap={chunk_overlap})...")
         chunks = text_splitter.split_documents(docs)
-        logger.info(f"[Part 08] Total chunks created: {len(chunks)}")
+        
+        logger.info(f"[Part 08.2] Total chunks created: {len(chunks)}")
         return chunks
     except Exception as e:
         logger.error(f"Error splitting documents: {e}")
@@ -104,7 +162,7 @@ def process_in_batches(documents, batch_size, ingest_fn, logger):
             logger.error(f"Failed to ingest batch {i // batch_size}: {e}")
             logger.debug(traceback.format_exc())
 
-def calc_chunk_ids(chunks, data_dir, logger):
+def calc_chunk_ids(chunks, base_data_path, logger):
     try:
         # Page Source : Page Number : Chunk Index
         last_page_id = None
@@ -117,7 +175,7 @@ def calc_chunk_ids(chunks, data_dir, logger):
             
             # logger.info("[Part 11.1] Normalizing & Standardizing paths, for cross-platform consistency...")
             norm_source = os.path.normpath(source)
-            rel_source = os.path.relpath(norm_source, data_dir).replace("\\", "/")
+            rel_source = os.path.relpath(norm_source, base_data_path).replace("\\", "/")
             
             curr_page_id = (f"{rel_source}:{page}")
             
@@ -142,21 +200,24 @@ def calc_chunk_ids(chunks, data_dir, logger):
         return chunks
 
 def filter_and_embed_chunks(chunks: List[Document], lower_limit, upper_limit, logger) -> List[Document]:
-    logger.info("[Part 14.6.1] Applying custom filtering on chunks before ingestion...")
+    logger.info("[Part 14.6.1] Applying custom (token-based) filtering on chunks before ingestion...")
     
     filtered = []
     for chunk in chunks:
         content = chunk.page_content.strip()
-        if lower_limit < len(content) < upper_limit:  # only chunks between lower_limit and upper_limit characters
+        token_len = num_tokens(content)
+        
+        # only chunks between lower_limit and upper_limit characters
+        if lower_limit < token_len < upper_limit:
             filtered.append(chunk)
-        else:
-            logger.warning(f"[Part 14.4.2(a)] Filtered out chunk (len={len(content)}): {chunk.metadata.get('chunk_id')}")
+        # else:
+        #     logger.warning(f"[Part 14.4.2(a)] Filtered out chunk ((tokens={token_len}, len={len(content)}): {chunk.metadata.get('chunk_id')}")
     
     logger.info(f"[Part 14.6.2(a)] Chunks remaining before filter: {len(chunks)}")
     logger.info(f"[Part 14.6.2(b)] Chunks remaining after filter: {len(filtered)}")
     return filtered
 
-def save_to_chroma_db(chunks: list[Document], chroma_db_dir, data_dir, lower_limit, upper_limit, batch_size, logger):
+def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, lower_limit, upper_limit, batch_size, logger):
     try:
         logger.info("[Part 13] Saving chunks to Chroma DB.....")
         
@@ -169,7 +230,7 @@ def save_to_chroma_db(chunks: list[Document], chroma_db_dir, data_dir, lower_lim
         
         # calculate "page:chunk" IDs
         # Step 1: Assign chunk IDs
-        chunks_with_ids = calc_chunk_ids(chunks, data_dir, logger)
+        chunks_with_ids = calc_chunk_ids(chunks, base_data_path, logger)
         logger.info(f"[Part 14.2] Calculated chunk IDs for total {len(chunks_with_ids)} chunks")
         
         # add/update the docs
@@ -203,7 +264,6 @@ def save_to_chroma_db(chunks: list[Document], chroma_db_dir, data_dir, lower_lim
         if unique_new_chunks:
             logger.info("[Part 14.7(a)] Ingesting new filtered chunks to DB in batches...")
             process_in_batches(
-                # documents=unique_new_chunks,
                 documents=filtered_chunks,
                 batch_size=batch_size,
                 ingest_fn=lambda batch: db.add_documents(batch, ids=[doc.metadata["chunk_id"] for doc in batch]),
@@ -222,7 +282,7 @@ def clear_database(chroma_db_dir):
     if os.path.exists(chroma_db_dir):
         shutil.rmtree(chroma_db_dir)
 
-def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, data_dir=DATA_PATH, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, batch_size=BATCH_SIZE):
+def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, base_data_path=DATA_PATH, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, batch_size=BATCH_SIZE):
     try:
         logger = setup_logger("populate_db_logger", LOG_FILE)
         logger.info(" ")
@@ -230,15 +290,17 @@ def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, data_dir=DATA_PAT
         
         # check if the db should be cleared (using the --clear flag)
         if reset:
-            logger.info("[Part 16] (RESET DB) Clearing the database...")
+            logger.info("[Part 00] (RESET DB) Clearing the database...")
             clear_database(chroma_db_dir)
         
         # create (or update) the db
-        docs = load_docs(data_dir, logger)
+        docs = load_docs(base_data_path, logger)
+        # docs = load_docs(base_data_path, grouped_dirs, logger)
         # logger.info(f"Loaded {len(docs)} docs")
         if not docs:
             logger.error("No docs loaded. Exiting.")
             return
+        
         flat_docs = flatten_docs(docs, logger)
         # logger.info(f"First document: {docs[0]}")
         
@@ -249,11 +311,16 @@ def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, data_dir=DATA_PAT
             return
         # logger.info(f"First chunk: {chunks[0]}")
         
-        save_to_chroma_db(chunks, chroma_db_dir, data_dir, lower_limit, upper_limit, batch_size, logger)
+        save_to_chroma_db(chunks, chroma_db_dir, base_data_path, lower_limit, upper_limit, batch_size, logger)
+        
+        # Manual memory cleanup
+        del docs, flat_docs, chunks
+        gc.collect()
+        
         logger.info("--------++++++++DB population stage successfully completed.")
         logger.info(" ")
     except Exception as e:
-        logger.error(f"Error in main: {e}")
+        logger.error(f"Error at [Stage 01]: {e}")
         logger.debug(traceback.format_exc())
 
 
