@@ -162,10 +162,8 @@ cython_debug/
 #.idea/
 
 artifacts/data/collected_data/
+artifacts/data/grouped_data/
 artifacts/data.zip
 
-# just for now
-artifacts/data/excels/
-artifacts/data/core/
-artifacts/data/arxiv/
-artifacts/data/pdfs
+chromadb/
+chromadb/chroma.sqlite3
