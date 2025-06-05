@@ -13,7 +13,8 @@ DATA_PATH: "artifacts/data/grouped_data/"
 # GROUPED_DIRS: ["group_1"]
 CHROMA_DB_PATH: "chromadb"
 
-EVALUATION_DATA_PATHS: "data/evaluation_data/questions.json"
+QUERY_TEXT: "How can we improve short-term Renewable Energy Forecasting in Greece using Prophet Decomposition andTree-based Ensembles?"
+EVALUATION_DATA_PATHS: "artifacts/data/evaluation_data/questions_1.json"
 RESULTS_CSV_PATH: "artifacts/results/evaluation_results.csv"
 
 CHUNK_SIZE: 512
@@ -21,7 +22,8 @@ CHUNK_OVERLAP: 50
 CHUNK_LOWER_LIMIT: 100
 CHUNK_UPPER_LIMIT: 500
 BATCH_SIZE: 64
-K: 5
+K: 10
+R: 5
 N: 3
 
 ENCODING_MODEL: "cl100k_base"

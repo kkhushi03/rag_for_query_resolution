@@ -1,7 +1,6 @@
 from utils.config import CONFIG
 import tiktoken
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
-from langchain_community.embeddings import GPT4AllEmbeddings
 from langchain_ollama import OllamaLLM
 
 
@@ -19,7 +18,7 @@ def num_tokens(text: str) -> int:
     # returns the no. of tokens in a text
     return len(encoding.encode(text))
 
-def embedding_function_hf():
+def embedding_func():
     model_kwargs = {"device": "cpu"}
     encode_kwargs = {"normalize_embeddings": True}
     
@@ -29,9 +28,6 @@ def embedding_function_hf():
         encode_kwargs=encode_kwargs
     )
     return embeddings
-
-def embedding_func():
-    return GPT4AllEmbeddings()
 
 def llm_func(prompt):
     llm = OllamaLLM(

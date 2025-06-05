@@ -15,7 +15,6 @@ requests
 tqdm
 lxml
 sentence-transformers
-gpt4all
 tiktoken
 # hf_xet
 huggingface_hub[hf_xet]
