@@ -1,0 +1,42 @@
+[
+    {
+        "question": "What is the main purpose of using Machine Learning in the African agricultural sector?",
+        "ground_truth": "To reduce uncertainties and risk across sectors, in this case, the agricultural sector, by making predictions and improving yields, mitigating losses, and effective management of natural resources."
+    },
+    {
+        "question": "What are the three main types of machine learning techniques mentioned?",
+        "ground_truth": "Supervised learning, Unsupervised learning, and Reinforcement learning."
+    },
+    {
+        "question": "What is supervised learning in the context of machine learning?",
+        "ground_truth": "Supervised learning is used when explanatory variables and their corresponding labels are available. The machine learns the interrelationships between them and generates predictions based on new inputs."
+    },
+    {
+        "question": "Why is reinforcement learning considered different from supervised and unsupervised learning?",
+        "ground_truth": "Reinforcement learning builds the dataset along the learning process and involves a reward system where the machine learns from outcomes based on actions it takes."
+    },
+    {
+        "question": "What algorithm enabled significant advancements in neural network training?",
+        "ground_truth": "The backpropagation algorithm."
+    },
+    {
+        "question": "Why is ML seen as evolving faster than traditional regression techniques?",
+        "ground_truth": "ML practitioners rely on experiments to show performance, allowing faster evolution compared to regression techniques, which usually need theoretical proof for adoption."
+    },
+    {
+        "question": "How is machine learning impacting the food system in agriculture?",
+        "ground_truth": "ML impacts farm operations, seed selection, planting periods, market prices, and distribution by making predictions and prescriptions to reduce risk and uncertainty in decision-making."
+    },
+    {
+        "question": "What are some limitations of sensing technologies in agriculture that ML can address?",
+        "ground_truth": "Sensing technologies tend to measure only one or two parameters and aren't suitable for predicting values, while ML can combine multivariate inputs for better predictive accuracy."
+    },
+    {
+        "question": "What percentage of African farms are under 5 hectares?",
+        "ground_truth": "95% of African farm sizes are less than 5 hectares."
+    },
+    {
+        "question": "Why is agricultural yield prediction important in the African context?",
+        "ground_truth": "It helps optimize farm operations, reduces hidden losses, and addresses uncertainties such as erratic rainfall, inadequate planting periods, and biophysical parameter variability."
+    }
+]
