@@ -13,7 +13,7 @@ DATA_PATH: "artifacts/data/grouped_data/"
 # GROUPED_DIRS: ["group_1"]
 CHROMA_DB_PATH: "chromadb"
 
-QUERY_TEXT: "How can we improve short-term Renewable Energy Forecasting in Greece using Prophet Decomposition andTree-based Ensembles?"
+QUERY_TEXT: "What depths were used for monitoring soil suction using the miniature tensiometer at the Boissy-le-Châtel site?"
 EVALUATION_DATA_PATHS: "artifacts/data/evaluation_data/questions_1.json"
 RESULTS_CSV_PATH: "artifacts/results/evaluation_results.csv"
 
@@ -29,4 +29,5 @@ N: 3
 ENCODING_MODEL: "cl100k_base"
 # EMBEDDING_MODEL: "sentence-transformers/all-MiniLM-L6-v2"
 EMBEDDING_MODEL: "BAAI/bge-small-en"
+RE_RANK_MODEL: "cross-encoder/ms-marco-MiniLM-L-6-v2"
 LOCAL_LLM: "llama3.2"
