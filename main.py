@@ -8,6 +8,8 @@ from utils.config import CONFIG
 from rag_pipeline.stage_01_populate_db import run_populate_db
 from rag_pipeline.stage_02_query_data import run_query_rag
 
+# configurations
+QUERY_TEXT = CONFIG["QUERY_TEXT"]
 
 # setup logging
 LOG_PATH = CONFIG["LOG_PATH"]
@@ -22,7 +24,7 @@ def main():
     # Create CLI.
     parser = argparse.ArgumentParser(description="MAIN WORKFLOW")
     parser.add_argument("--reset", action="store_true", help="Reset Chroma DB before population")
-    # parser.add_argument("query_text", type=str, help="The query text.")
+    parser.add_argument("query_text", type=str, help="The query text.")
     args = parser.parse_args()
     
     # NO NEED TO RUN IT AGAIN AND AGAIN
@@ -70,7 +72,7 @@ def main():
             logger.info(" ")
             logger.info("----------STARTING [STAGE 02] QUERY RAG----------")
             # run_query_rag(args.query_text)
-            run_query_rag(query="What algorithm enabled significant advancements in neural network training?")
+            run_query_rag(query=QUERY_TEXT)
             # logger.info("Already Done. Skipping...")
             logger.info("----------FINISHED [STAGE 02] QUERY RAG----------")
             logger.info(" ")
