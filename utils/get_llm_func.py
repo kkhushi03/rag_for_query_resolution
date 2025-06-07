@@ -1,12 +1,16 @@
 from utils.config import CONFIG
 import tiktoken
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
+from sentence_transformers import CrossEncoder
 from langchain_ollama import OllamaLLM
 
 
 ENCODING_MODEL = CONFIG["ENCODING_MODEL"]
 EMBEDDING_MODEL = CONFIG["EMBEDDING_MODEL"]
+RE_RANK_MODEL = CONFIG["RE_RANK_MODEL"]
 LOCAL_LLM = CONFIG["LOCAL_LLM"]
+
+cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
 
 
 def encoding_func():
@@ -29,10 +33,33 @@ def embedding_func():
     )
     return embeddings
 
+def rerank_results(query: str, docs_with_scores):
+    pairs = [(query, doc.page_content) for doc, _ in docs_with_scores]
+    scores = cross_encoder.predict(pairs)
+    
+    reranked = sorted(
+        zip(docs_with_scores, scores),
+        key=lambda x: x[1],
+        reverse=True  # higher is better
+    )
+    return [(doc, score) for ((doc, _), score) in reranked]
+
 def llm_func(prompt):
     llm = OllamaLLM(
         model=LOCAL_LLM,
         format="json",
+        temperature=0.1,
+        max_tokens=512,
+        # streaming=True,
+        streaming=False,
+        verbose=True,
+    )
+    return llm.invoke(prompt)
+
+def llm_gen_func(prompt):
+    llm = OllamaLLM(
+        model=LOCAL_LLM,
+        # format="json",
         temperature=0.1,
         max_tokens=512,
         # streaming=True,
