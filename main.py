@@ -24,7 +24,7 @@ def main():
     # Create CLI.
     parser = argparse.ArgumentParser(description="MAIN WORKFLOW")
     parser.add_argument("--reset", action="store_true", help="Reset Chroma DB before population")
-    parser.add_argument("query_text", type=str, help="The query text.")
+    # parser.add_argument("query_text", type=str, help="The query text.")
     args = parser.parse_args()
     
     # NO NEED TO RUN IT AGAIN AND AGAIN
@@ -68,18 +68,18 @@ def main():
             logger.debug(traceback.format_exc())
             return
         
-        try:
-            logger.info(" ")
-            logger.info("----------STARTING [STAGE 02] QUERY RAG----------")
-            # run_query_rag(args.query_text)
-            run_query_rag(query=QUERY_TEXT)
-            # logger.info("Already Done. Skipping...")
-            logger.info("----------FINISHED [STAGE 02] QUERY RAG----------")
-            logger.info(" ")
-        except Exception as e:
-            logger.error(f"ERROR RUNNING [STAGE 02] QUERY RAG: {e}")
-            logger.debug(traceback.format_exc())
-            return
+        # try:
+        #     logger.info(" ")
+        #     logger.info("----------STARTING [STAGE 02] QUERY RAG----------")
+        #     # run_query_rag(args.query_text)
+        #     run_query_rag(query=QUERY_TEXT)
+        #     # logger.info("Already Done. Skipping...")
+        #     logger.info("----------FINISHED [STAGE 02] QUERY RAG----------")
+        #     logger.info(" ")
+        # except Exception as e:
+        #     logger.error(f"ERROR RUNNING [STAGE 02] QUERY RAG: {e}")
+        #     logger.debug(traceback.format_exc())
+        #     return
         
         logger.info("////--//--//----FINISHED [PIPELINE 02] RAG PIPELINE----//--//--////")
         logger.info(" ")

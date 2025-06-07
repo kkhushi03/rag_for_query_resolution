@@ -32,3 +32,25 @@
 2. test rag → ```pytest test_rag.py```
 
 3. run evaluation pipeline → ```py evaluate_rag.py```
+
+
+## Model info (as of 7th June, 2025):
+
+1. Encoding:
+    1. "cl100k_base"
+
+2. Embedding form [MTEB](https://huggingface.co/spaces/mteb/leaderboard):
+| Model Name                                | MTEB Rank | M/M Usage (MB) | Params. | Embedding Dim. | Max. Tokens | STS   | Retrieval | Re-ranking |
+|-------------------------------------------|-----------|----------------|---------|----------------|-------------|-------|-----------|------------|
+| "sentence-transformers/all-MiniLM-L6-v2"  | 118       | 87             | 22M     | 384            | 256         | 56.08 | 32.51     | 40.28      |
+| "BAAI/bge-small-en"                       | 87        | 127            | 33M     | 512            | 512         | 59.73 | 36.26     | 45.89      |
+| "intfloat/e5-small-v2"                    | 81        | 127            | 33M     | 384            | 512         | 59.87 | 39.38     | 44.44      |
+| "intfloat/multilingual-e5-large-instruct" | 7         | 1068           | 560M    | 1024           | 514         | 76.81 | 57.12     | 62.61      |
+| "Qwen/Qwen3-Embedding-0.6B"               | 4         | 2272           | 595M    | 1024           | 32768       | 76.71 | 64.65     | 61.41      |
+
+3. Re-ranking:
+   1. "cross-encoder/ms-marco-MiniLM-L-6-v2"
+
+4. Generation:
+   1. "llama3.2"
+        * 3B params
