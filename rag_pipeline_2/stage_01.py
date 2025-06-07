@@ -148,7 +148,7 @@ def process_folder(folder_name):
 # Main Pipeline
 def main():
     print("🚀 Starting memory-efficient document processing...")
-    for folder in ["core", "arxiv", "pdfs", "excels"]:
+    for folder in ["core"]:
         print(f"📁 Processing folder: {folder}")
         process_folder(folder)
     print("✅ All documents processed and stored.")
