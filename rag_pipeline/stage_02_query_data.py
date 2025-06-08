@@ -101,7 +101,7 @@ def query_rag(query_text: str, chroma_db_dir, at_k, at_r, logger):
             return []
         
         try:
-            logger.info(f"[Part 04] Generating Answer with LLM from {len(graded_results)}.....")
+            logger.info(f"[Part 04] Generating Answer with LLM from {len(graded_results)} graded documents.....")
             if not graded_results:
                 logger.warning("No graded documents with 'YES' passed. Skipping generation.")
                 return []
