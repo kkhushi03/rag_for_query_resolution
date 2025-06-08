@@ -1,64 +1,56 @@
 [
     {
-        "q_id": 1,
         "question": "What depths were used for monitoring soil suction using the miniature tensiometer at the Boissy-le-Châtel site?",
         "ground_truth": "The miniature tensiometer was used to monitor in situ soil suction at two depths: 25 cm and 45 cm.",
-        "difficulty": 1,
-        "sources": "['group_1/0801.2308v1.pdf:0:0', 'group_1/0801.2308v1.pdf:7:0', 'group_1/0801.2308v1.pdf:2:0']",
-        "correctness": 1
+        "relevant_doc_ids": [
+            "group_1/0801.2308v1.pdf:0:0", 
+            "group_1/0801.2308v1.pdf:7:0", 
+            "group_1/0801.2308v1.pdf:2:0"
+        ],
+        "difficulty": "med",
+        "correctness": "True"
     },
     {
-        "q_id": 2,
         "question": "Why does suction decrease more significantly at 45 cm depth than at 25 cm depth during rainfall periods?",
         "ground_truth": "The more significant suction decrease at 45 cm depth is attributed to the hysteresis phenomenon in the soil’s water retention behavior. The retention curve at 45 cm depth is closer to the bounding drying curve, while at 25 cm it is closer to the wetting curve, leading to a more pronounced decrease in suction during rainfalls at the deeper level."
     },
     {
-        "q_id": 3,
         "question": "What is the main purpose of using Machine Learning in the African agricultural sector?",
         "ground_truth": "To reduce uncertainties and risk across sectors, in this case, the agricultural sector, by making predictions and improving yields, mitigating losses, and effective management of natural resources."
     },
     {
-        "q_id": 4,
         "question": "What are the three main types of machine learning techniques mentioned?",
         "ground_truth": "Supervised learning, Unsupervised learning, and Reinforcement learning."
     },
     {
-        "q_id": 5,
         "question": "What is supervised learning in the context of machine learning?",
         "ground_truth": "Supervised learning is used when explanatory variables and their corresponding labels are available. The machine learns the interrelationships between them and generates predictions based on new inputs."
     },
     {
-        "q_id": 6,
         "question": "Why is reinforcement learning considered different from supervised and unsupervised learning?",
         "ground_truth": "Reinforcement learning builds the dataset along the learning process and involves a reward system where the machine learns from outcomes based on actions it takes."
     },
     {
-        "q_id": 7,
         "question": "What algorithm enabled significant advancements in neural network training?",
         "ground_truth": "The backpropagation algorithm."
     },
     {
-        "q_id": 8,
         "question": "Why is ML seen as evolving faster than traditional regression techniques?",
         "ground_truth": "ML practitioners rely on experiments to show performance, allowing faster evolution compared to regression techniques, which usually need theoretical proof for adoption."
     },
     {
-        "q_id": 9,
         "question": "How is machine learning impacting the food system in agriculture?",
         "ground_truth": "ML impacts farm operations, seed selection, planting periods, market prices, and distribution by making predictions and prescriptions to reduce risk and uncertainty in decision-making."
     },
     {
-        "q_id": 10,
         "question": "What are some limitations of sensing technologies in agriculture that ML can address?",
         "ground_truth": "Sensing technologies tend to measure only one or two parameters and aren't suitable for predicting values, while ML can combine multivariate inputs for better predictive accuracy."
     },
     {
-        "q_id": 11,
         "question": "What percentage of African farms are under 5 hectares?",
         "ground_truth": "95% of African farm sizes are less than 5 hectares."
     },
     {
-        "q_id": 12,
         "question": "Why is agricultural yield prediction important in the African context?",
         "ground_truth": "It helps optimize farm operations, reduces hidden losses, and addresses uncertainties such as erratic rainfall, inadequate planting periods, and biophysical parameter variability."
     }

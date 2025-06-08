@@ -28,7 +28,7 @@ def calc_mrr_score(retrieved_doc_ids: List[str], relevant_doc_ids: List[str]) ->
     return {'mrr': 0.0}
 
 
-def calc_ndcg_at_k_score(retrieved_doc_ids: List[str], relevant_doc_ids: List[str], k: int = 5) -> Dict[str, float]:
+def calc_ndcg_at_k_score(retrieved_doc_ids: List[str], relevant_doc_ids: List[str], k: int) -> Dict[str, float]:
     """
     Calculate Normalized Discounted Cumulative Gain (nDCG@k)
     
@@ -70,7 +70,7 @@ def calc_ndcg_at_k_score(retrieved_doc_ids: List[str], relevant_doc_ids: List[st
     return {f'ndcg_at_{k}': ndcg}
 
 
-def calc_precision_at_k_score(retrieved_doc_ids: List[str], relevant_doc_ids: List[str], k: int = 5) -> Dict[str, float]:
+def calc_precision_at_k_score(retrieved_doc_ids: List[str], relevant_doc_ids: List[str], k: int) -> Dict[str, float]:
     """
     Calculate Precision@k
     
@@ -98,7 +98,7 @@ def calc_precision_at_k_score(retrieved_doc_ids: List[str], relevant_doc_ids: Li
     return {f'precision_at_{k}': precision_at_k}
 
 
-def calc_recall_at_k_score(retrieved_doc_ids: List[str], relevant_doc_ids: List[str], k: int = 5) -> Dict[str, float]:
+def calc_recall_at_k_score(retrieved_doc_ids: List[str], relevant_doc_ids: List[str], k: int) -> Dict[str, float]:
     """
     Calculate Recall@k
     
@@ -126,7 +126,7 @@ def calc_recall_at_k_score(retrieved_doc_ids: List[str], relevant_doc_ids: List[
     return {f'recall_at_{k}': recall_at_k}
 
 
-def calc_all_retrieval_scores(retrieved_doc_ids: List[str], relevant_doc_ids: List[str], k: int = 5) -> Dict[str, float]:
+def calc_all_retrieval_scores(retrieved_doc_ids: List[str], relevant_doc_ids: List[str], at_k: int) -> Dict[str, float]:
     """
     Calculate all retrieval evaluation scores
     
@@ -144,13 +144,13 @@ def calc_all_retrieval_scores(retrieved_doc_ids: List[str], relevant_doc_ids: Li
     scores.update(calc_mrr_score(retrieved_doc_ids, relevant_doc_ids))
     
     # nDCG@k
-    scores.update(calc_ndcg_at_k_score(retrieved_doc_ids, relevant_doc_ids, k))
+    scores.update(calc_ndcg_at_k_score(retrieved_doc_ids, relevant_doc_ids, at_k))
     
     # Precision@k
-    scores.update(calc_precision_at_k_score(retrieved_doc_ids, relevant_doc_ids, k))
+    scores.update(calc_precision_at_k_score(retrieved_doc_ids, relevant_doc_ids, at_k))
     
     # Recall@k
-    scores.update(calc_recall_at_k_score(retrieved_doc_ids, relevant_doc_ids, k))
+    scores.update(calc_recall_at_k_score(retrieved_doc_ids, relevant_doc_ids, at_k))
     
     return scores
 
