@@ -29,32 +29,32 @@ LOG_FILE = os.path.join(LOG_DIR, "stage_02_query_rag.log")
 def query_rag(query_text: str, chroma_db_dir, at_k, at_r, logger):
     try:
         try:
-            logger.info("[Part 01] Querying Chroma DB.....")
+            logger.info("[Stage 02, Part 01] Querying Chroma DB.....")
             
             # load the existing db (prep the db)
             db = Chroma(
                 embedding_function=embedding_func(),
                 persist_directory=chroma_db_dir,
             )
-            logger.info(f"[Part 01.1] Loading existing DB from path: {chroma_db_dir}")
+            logger.info(f"[Stage 02, Part 01.1] Loading existing DB from path: {chroma_db_dir}")
             
             # query the db (search the db)
-            logger.info(f"[Part 01.2] Searching the db with text using similarity search: {query_text}")
+            logger.info(f"[Stage 02, Part 01.2] Searching the db with text using similarity search: {query_text}")
             results = db.similarity_search_with_score(query_text, k=at_k)
-            logger.info(f"[Part 01.3] Retrieved {len(results)} Docs:")
+            logger.info(f"[Stage 02, Part 01.3] Retrieved {len(results)} Docs:")
             # logger.info(type(results))
             for i, (doc, sim_score) in enumerate(results):
                 logger.info(f"  [{i}] Similarity Score: {sim_score:.4f}, Chunk ID: {doc.metadata.get('chunk_id')}")
             logger.debug(f"[Result A] Top {at_k} retrieved results: {results}")
             
-            logger.info("[Part 01] Querying Chroma DB completed successfully")
+            logger.info("[Stage 02, Part 01] Querying Chroma DB completed successfully")
         except Exception as e:
-            logger.error(f"[Part 01] Error in querying Chroma DB: {e}")
+            logger.error(f"[Stage 02, Part 01] Error in querying Chroma DB: {e}")
             logger.debug(traceback.format_exc())
             return []
         
         try:
-            logger.info(f"[Part 02] Re-ranking {len(results)} retrieved results.....")
+            logger.info(f"[Stage 02, Part 02] Re-ranking {len(results)} retrieved results.....")
             
             reranked_results = rerank_results(query_text, results)
             for i, (doc, score) in enumerate(reranked_results):
@@ -63,14 +63,14 @@ def query_rag(query_text: str, chroma_db_dir, at_k, at_r, logger):
             reranked_results = reranked_results[:at_r]
             logger.debug(f"[Result B] Top {at_r} after re-ranking: {reranked_results}")
             
-            logger.info("[Part 02] Re-ranking completed successfully")
+            logger.info("[Stage 02, Part 02] Re-ranking completed successfully")
         except Exception as e:
-            logger.error(f"[Part 02] Error in re-ranking retrieved results: {e}")
+            logger.error(f"[Stage 02, Part 02] Error in re-ranking retrieved results: {e}")
             logger.debug(traceback.format_exc())
             return []
         
         try:
-            logger.info(f"[Part 03] Grading Top {len(reranked_results)} Re-ranked Retrieved Docs.....")
+            logger.info(f"[Stage 02, Part 03] Grading Top {len(reranked_results)} Re-ranked Retrieved Docs.....")
             retrieval_grader = prompt_retrieval_grader | llm_func | JsonOutputParser()
             graded_results = []
 
@@ -90,18 +90,18 @@ def query_rag(query_text: str, chroma_db_dir, at_k, at_r, logger):
                     continue
             
             logger.debug(f"[Result C] Top {at_r} results after grading: {graded_results}")
-            logger.info(f"[Part 03.1] Filtering only 'YES' results.....")
+            logger.info(f"[Stage 02, Part 03.1] Filtering only 'YES' results.....")
             graded_results = [item for item in graded_results if item[2] == "YES"]
-            logger.info(f"[Part 03.2] Number of results after filtering only 'YES': {len(graded_results)}")
+            logger.info(f"[Stage 02, Part 03.2] Number of results after filtering only 'YES': {len(graded_results)}")
             
-            logger.info("[Part 03] Grading completed successfully.")
+            logger.info("[Stage 02, Part 03] Grading completed successfully.")
         except Exception as e:
-            logger.error(f"[Part 03] Error in grading retrieved results: {e}")
+            logger.error(f"[Stage 02, Part 03] Error in grading retrieved results: {e}")
             logger.debug(traceback.format_exc())
             return []
         
         try:
-            logger.info(f"[Part 04] Generating Answer with LLM from {len(graded_results)} graded documents.....")
+            logger.info(f"[Stage 02, Part 04] Generating Answer with LLM from {len(graded_results)} graded documents.....")
             if not graded_results:
                 logger.warning("No graded documents with 'YES' passed. Skipping generation.")
                 return []
@@ -128,9 +128,9 @@ def query_rag(query_text: str, chroma_db_dir, at_k, at_r, logger):
             sources = [doc.metadata.get("chunk_id", None) for doc, _, _ in graded_results]
             logger.debug(f"[Result E] Sources: {sources}")
             
-            logger.info("[Part 04] Generating Answer from LLM completed successfully")
+            logger.info("[Stage 02, Part 04] Generating Answer from LLM completed successfully")
         except Exception as e:
-            logger.error(f"[Part 04] Error in generating answer from LLM: {e}")
+            logger.error(f"[Stage 02, Part 04] Error in generating answer from LLM: {e}")
             logger.debug(traceback.format_exc())
             return []
         
@@ -163,9 +163,9 @@ def run_query_rag(query: str, chroma_db_dir=CHROMA_DB_PATH, at_k=K, at_r=R) -> s
         
         results = query_rag(query, chroma_db_dir, at_k, at_r, logger)
         if query is None:
-            logger.error("No query provided. Exiting.")
+            logger.error("[Stage 02] No query provided. Exiting.")
             return
-        logger.debug(f"Results: {results}")
+        logger.debug(f"[Stage 02] Results: {results}")
 
         # logger.info("Graded results:")
         # for idx, (doc, sim_score, relevance) in enumerate(results["graded_results"]):
@@ -175,23 +175,23 @@ def run_query_rag(query: str, chroma_db_dir=CHROMA_DB_PATH, at_k=K, at_r=R) -> s
         logger.info(" ")
         logger.info("#--#--FINAL RESULTS:--#--#")
         logger.info(" ")
-        logger.info(f"Query: {query}")
+        logger.info(f"[Stage 02] Query: {query}")
         logger.info(" ")
-        logger.info(f"LLM's response: {results['llms_response']}")
+        logger.info(f"[Stage 02] LLM's response: {results['llms_response']}")
         logger.info(" ")
-        logger.info(f"Sources: {results['sources']}")
+        logger.info(f"[Stage 02] Sources: {results['sources']}")
         logger.info(" ")
-        logger.info(f"Context: {results['context']}")
+        logger.info(f"[Stage 02] Context: {results['context']}")
         logger.info(" ")
-        logger.debug(f"Retrieved Docs: {results['results']}")
-        logger.debug(f"Reranked Retrieved Docs: {results['rereranked_results']}")
-        logger.debug(f"Graded Re-ranked Retrieved Docs: {results['graded_results']}")
+        logger.debug(f"[Stage 02] Retrieved Docs: {results['results']}")
+        logger.debug(f"[Stage 02] Reranked Retrieved Docs: {results['rereranked_results']}")
+        logger.debug(f"[Stage 02] Graded Re-ranked Retrieved Docs: {results['graded_results']}")
         logger.info(" ")
         
         logger.info("++++++++Querying, Retrieval Grading, & Generation stage completed successfully.")
         logger.info(" ")
     except Exception as e:
-        logger.error(f"Pipeline error: {e}")
+        logger.error(f"Error at [Stage 02]: {e}")
         logger.debug(traceback.format_exc())
 
 

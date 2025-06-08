@@ -156,7 +156,7 @@ def calc_rouge_l_score(predicted: str, ground_truth: str) -> Dict[str, float]:
         'rouge_l_f1': f1
     }
 
-def calc_bleu_score(predicted: str, ground_truth: str, max_n: int = 4) -> Dict[str, float]:
+def calc_bleu_score(predicted: str, ground_truth: str, max_n: int) -> Dict[str, float]:
     """
     Calculate BLEU score between predicted and ground truth text
     
@@ -260,7 +260,7 @@ def calc_faithfulness_score(predicted: str, context: str) -> Dict[str, float]:
         'faithfulness': faithfulness
     }
 
-def calc_all_generation_scores(predicted: str, ground_truth: str, context: str = "") -> Dict[str, float]:
+def calc_all_generation_scores(predicted: str, ground_truth: str, context: str = "", max_n: int=None) -> Dict[str, float]:
     """
     Calculate all generation evaluation scores
     
@@ -284,7 +284,7 @@ def calc_all_generation_scores(predicted: str, ground_truth: str, context: str =
     scores.update(calc_rouge_l_score(predicted, ground_truth))
     
     # BLEU Score
-    scores.update(calc_bleu_score(predicted, ground_truth))
+    scores.update(calc_bleu_score(predicted, ground_truth, max_n))
     
     # Faithfulness (only if context is provided)
     if context:

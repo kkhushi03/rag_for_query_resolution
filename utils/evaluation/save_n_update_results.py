@@ -19,16 +19,16 @@ def append_new_results_to_csv(results: List[Dict], result_csv_path: str, logger)
         df_new = pd.DataFrame(results)
 
         if os.path.exists(result_csv_path):
-            logger.info(f"Appending to existing CSV at: {result_csv_path}")
+            logger.info(f" [Save to CSV] Appending to existing CSV at: {result_csv_path}")
             df_existing = pd.read_csv(result_csv_path)
             df_combined = pd.concat([df_existing, df_new], ignore_index=True)
             df_combined.to_csv(result_csv_path, index=False)
-            logger.info(f"Appended {len(results)} new rows.")
+            logger.info(f" [Save to CSV] Appended {len(results)} new rows.")
         else:
-            logger.info(f"Creating new CSV at: {result_csv_path}")
+            logger.info(f" [Save to CSV] Creating new CSV at: {result_csv_path}")
             df_new.to_csv(result_csv_path, index=False)
-            logger.info(f"Saved {len(results)} rows in new CSV.")
+            logger.info(f" [Save to CSV] Saved {len(results)} rows in new CSV.")
 
     except Exception as e:
-        logger.error(f"Error while saving results to CSV: {e}")
+        logger.error(f" [Save to CSV] Error while saving results to CSV: {e}")
         logger.debug(traceback.format_exc())

@@ -2,7 +2,6 @@ import os
 import json
 import traceback
 import time
-import pandas as pd
 from datetime import datetime
 from typing import List, Dict, Any
 from utils.config import CONFIG
@@ -20,6 +19,7 @@ EVALUATION_DATA_PATHS = CONFIG.get("EVALUATION_DATA_PATHS", [])
 RESULTS_CSV_PATH = CONFIG.get("RESULTS_CSV_PATH", "evaluation_results.csv")
 K = CONFIG["K"]
 R = CONFIG["R"]
+MAX_N = CONFIG["MAX_N"]
 EMBEDDING_MODEL = CONFIG["EMBEDDING_MODEL"]
 LOCAL_LLM = CONFIG["LOCAL_LLM"]
 
@@ -33,67 +33,67 @@ def load_evaluation_data(file_path: str, logger) -> List[Dict]:
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             return json.load(f)
-        logger.info(f"[Part 01] Loaded evaluation data from {file_path}")
+        logger.info(f"[Stage 03, Part 01] Loaded evaluation data from {file_path}")
     except FileNotFoundError:
-        logger.warning(f"[Part 01] Evaluation data file not found: {file_path}")
+        logger.warning(f"[Stage 03, Part 01] Evaluation data file not found: {file_path}")
         return []
     except json.JSONDecodeError as e:
-        logger.error(f"[Part 01] Error parsing JSON file: {e}")
+        logger.error(f"[Stage 03, Part 01] Error parsing JSON file: {e}")
         logger.debug(traceback.format_exc())
         return []
 
-def evaluate_single_query(question: str, ground_truth: str, relevant_doc_ids: List[str], at_k, logger) -> Dict[str, Any]:
+def evaluate_single_query(question: str, ground_truth: str, relevant_doc_ids: List[str], chroma_db_dir, at_k: int, at_r: int, max_n: int, logger) -> Dict[str, Any]:
     start_time = time.time()
 
     try:
-        logger.info(f"[Part 02] Processing question: {question}")
-        rag_result = query_rag(query_text=question, chroma_db_dir=CHROMA_DB_PATH, at_k=K, at_r=R, logger=logger)
+        logger.info(f"[Stage 03, Part 02] Processing question: {question}")
+        rag_result = query_rag(query_text=question, chroma_db_dir=chroma_db_dir, at_k=at_k, at_r=at_r, logger=logger)
         
         predicted_answer = rag_result.get('llms_response', '')
         context = rag_result.get('context', '')
         retrieved_docs = rag_result.get('results', []) 
         graded_results = rag_result.get('graded_results', []) # list of (doc, sim_score) 
         
-        logger.info(f" [Part 02.1(a)] Predicted answer: {predicted_answer}")
-        logger.info(f" [Part 02.1(b)] Context: {context}")
-        logger.info(f" [Part 02.1(c)] Retrieved docs: {retrieved_docs}")
-        logger.info(f" [Part 02.1(d)] Graded results: {graded_results}")
+        logger.info(f" [Stage 03, Part 02.1(a)] Predicted answer: {predicted_answer}")
+        logger.debug(f" [Stage 03, Part 02.1(b)] Context: {context}")
+        logger.info(f" [Stage 03, Part 02.1(c)] Retrieved docs: {len(retrieved_docs)}")
+        logger.info(f" [Stage 03, Part 02.1(d)] Graded docs: {len(graded_results)}")
         
         end_time = time.time()
         latency_ms = (end_time - start_time) * 1000  # Convert to milliseconds
         
-        logger.info("[Part 02.2] Extracting retrieved document IDs in order......")
-        retrieved_doc_ids = [doc.metadata.get("chunk_id", "") for doc, _ in retrieved_docs]
-        logger.info(f"[Part 02.2] Retrieved doc IDs: {retrieved_doc_ids}")
+        logger.info("[Stage 03, Part 02.2] Extracting retrieved graded document IDs in order......")
+        graded_retrieved_doc_ids = [doc.metadata.get("chunk_id", "") for doc, _, _ in graded_results]
+        logger.info(f"[Stage 03, Part 02.2] Retrieved graded doc IDs: {graded_retrieved_doc_ids}")
         
-        logger.info(f"[Part 02.3] Calculating retrieval & generation scores for query: {question}")
-        retrieval_scores = calc_all_retrieval_scores(retrieved_doc_ids, relevant_doc_ids, k=at_k)
-        generation_scores = calc_all_generation_scores(predicted_answer, ground_truth, context)
+        logger.info(f"[Stage 03, Part 02.3] Calculating retrieval & generation scores for query: {question}")
+        retrieval_scores = calc_all_retrieval_scores(graded_retrieved_doc_ids, relevant_doc_ids, at_r)
+        generation_scores = calc_all_generation_scores(predicted_answer, ground_truth, context, max_n)
         
         result = {
             'question': question,
             'predicted_answer': predicted_answer,
             'ground_truth': ground_truth,
             'context': context[:200] + "..." if len(context) > 200 else context,  # Truncate for CSV
-            'retrieved_doc_ids': retrieved_doc_ids[:5],  # Top 5 for CSV
+            'graded_retrieved_doc_ids': graded_retrieved_doc_ids[:5],  # Top 5 for CSV
             'relevant_doc_ids': relevant_doc_ids,
             'latency_ms': latency_ms,
             'success': True,
             'error': None
         }
         
-        logger.info(f"[Part 02.3] Adding retrieval & generation scores to result......")
+        logger.info(f"[Stage 03, Part 02.3] Adding retrieval & generation scores to result......")
         result.update(retrieval_scores)
         result.update(generation_scores)
         
-        logger.info(f"[Part 02.3] Successfully calculated retrieval & generation scores for query: {question}")
+        logger.info(f"[Stage 03, Part 02.3] Successfully calculated retrieval & generation scores for query: {question}")
         return result
         
     except Exception as e:
         end_time = time.time()
         latency_ms = (end_time - start_time) * 1000
         
-        logger.error(f"[Part 02] Error: {e}")
+        logger.error(f"[Stage 03, Part 02] Error: {e}")
         logger.error(f"Latency: {latency_ms} ms")
         logger.debug(traceback.format_exc())
         
@@ -101,7 +101,7 @@ def evaluate_single_query(question: str, ground_truth: str, relevant_doc_ids: Li
             'question': question,
             'predicted_answer': '',
             'ground_truth': ground_truth,
-            'retrieved_doc_ids': [],
+            'graded_retrieved_doc_ids': [],
             'relevant_doc_ids': relevant_doc_ids,
             'latency_ms': latency_ms,
             'success': False,
@@ -128,103 +128,84 @@ def evaluate_single_query(question: str, ground_truth: str, relevant_doc_ids: Li
         return result
         
     finally:
-        logger.info(f"[Part 02] Finished processing question & generating eval. scores")
+        logger.info(f"[Stage 03, Part 02] Finished processing question & generating eval. scores")
         # Log the result
         logger.info(json.dumps(result))
 
-# def save_results_to_csv(results: List[Dict], result_dir, logger):
-#     try:
-#         df = pd.DataFrame(results)
-#         logger.info(f"[Part 03] Saving results to CSV: {result_dir}")
-        
-#         logger.info("[Part 03.1] Creating directory if not exists.....")
-#         os.makedirs(os.path.dirname(result_dir), exist_ok=True)
-        
-#         logger.info("[Part 03.2] Checking if CSV exists to append or create new.....")
-#         if os.path.exists(result_dir):
-#             logger.info("[Part 03.3] CSV exists, appending results.....")
-#             existing_df = pd.read_csv(result_dir)
-#             combined_df = pd.concat([existing_df, df], ignore_index=True)
-#             combined_df.to_csv(result_dir, index=False)
-#             logger.info(f"[Part 03(a)] Appended {len(results)} results to existing CSV: {result_dir}")
-#         else:
-#             logger.info("[Part 03.4] CSV does not exist, creating new CSV.....")
-#             df.to_csv(result_dir, index=False)
-#             logger.info(f"[Part 03(b)] Created new CSV with {len(results)} results: {result_dir}")
-            
-#     except Exception as e:
-#         logger.error(f"[Part 03] Error saving results to CSV: {e}")
-#         logger.debug(traceback.format_exc())
 
-
-def run_evaluation(eval_dir=EVALUATION_DATA_PATHS, result_dir=RESULTS_CSV_PATH, at_k=K,):
+def run_evaluation(eval_dir=EVALUATION_DATA_PATHS, result_dir=RESULTS_CSV_PATH, chroma_db_dir=CHROMA_DB_PATH, at_k=K, at_r=R, max_n=MAX_N, embedding_model=EMBEDDING_MODEL, local_llm=LOCAL_LLM):
     logger = setup_logger("evaluation_logger", LOG_FILE)
     logger.info(" ")
     logger.info("++++++++[Pipeline 3] Starting RAG Evaluation.....")
     
-    logger.info(f"Loading evaluation data from {eval_dir}......")
+    # if the questions are in a single file
+    logger.info(f"[Stage 03] Loading evaluation data from {eval_dir}......")
     eval_data = load_evaluation_data(eval_dir, logger)
     if not eval_data:
-        logger.error("No evaluation data found. Exiting.")
+        logger.error("[Stage 03] No evaluation data found. Exiting.")
         return
     
-    logger.info(f"Loaded {len(eval_data)} evaluation questions")
+    logger.info(f"[Stage 03] Loaded {len(eval_data)} evaluation questions")
     
-    # logger.info(f"Loading & combining evaluation data from {eval_dir}......")
+    # # if the questions are in multiple files
+    # logger.info(f"[Stage 03] Loading & combining evaluation data from {eval_dir}......")
     # eval_data = []
     # for path in eval_dir:
-    #     logger.info(f"Loading evaluation data from {path}......")
+    #     logger.info(f"[Stage 03] Loading evaluation data from {path}......")
     #     data = load_evaluation_data(path, logger)
     #     if not data:
-    #         logger.warning(f"No valid data found in {path}. Skipping.....")
+    #         logger.warning(f"[Stage 03] No valid data found in {path}. Skipping.....")
     #         continue
     #     for item in data:
     #         item['source_file'] = os.path.basename(path)
-    #         logger.debug("Tracking source file for each question......")
+    #         logger.debug("[Stage 03] Tracking source file for each question......")
     #     eval_data.extend(data)
 
     # if not eval_data:
-    #     logger.error("No evaluation data found from any source. Exiting.")
+    #     logger.error("[Stage 03] No evaluation data found from any source. Exiting.")
     #     return
 
-    logger.info(f"Total combined evaluation questions: {len(eval_data)}")
-    logger.info("Evaluating each question......")
+    logger.info(f"[Stage 03] Total combined evaluation questions: {len(eval_data)}")
+    logger.info("[Stage 03] Evaluating each question......")
     results = []
     for i, item in enumerate(eval_data):
-        logger.info(f"Evaluating question {i+1}/{len(eval_data)}: {item['question'][:50]}......")
+        logger.info(f"[Stage 03] Evaluating question {i+1}/{len(eval_data)}: {item['question'][:50]}......")
         
-        logger.info("Get relevant_doc_ids from the evaluation data......")
+        logger.info("[Stage 03] Get relevant_doc_ids from the evaluation data......")
         relevant_doc_ids = item.get('relevant_doc_ids', [])
         if not relevant_doc_ids:
-            logger.warning(f"No relevant_doc_ids found for question {i+1}. Using empty list.")
+            logger.warning(f"[Stage 03] No relevant_doc_ids found for question {i+1}. Using empty list.")
         
         result = evaluate_single_query(
             question=item['question'],
             ground_truth=item['ground_truth'],
             relevant_doc_ids=relevant_doc_ids,
+            chroma_db_dir=chroma_db_dir,
             at_k=at_k,
+            at_r=at_r,
+            max_n=max_n,
             logger=logger
         )
         
-        logger.info("Adding metadata to the results......")
+        logger.info("[Stage 03] Adding metadata to the results......")
         result.update({
             'timestamp': datetime.now().isoformat(),
-            'embedding_model_name': EMBEDDING_MODEL,
-            'gen_model_name': LOCAL_LLM,
-            'question_id': i,
-            'category': item.get('category', 'unknown'),
+            'embedding_model_name': embedding_model,
+            'gen_model_name': local_llm,
+            'q_id': i,
             'difficulty': item.get('difficulty', 'unknown'),
-            'source_file': item.get('source_file', 'unknown'),
+            'correctness': item.get('correctness', 'unknown'),
         })
         results.append(result)
+        logger.info("[Stage 03] Added metadata to the results.")
         
         logger.info(" ")
-        logger.info("Logging key metrics for this question......")
+        logger.info("[Stage 03] Logging key metrics for this question......")
         logger.info(f"[Result A.1] Retrieval Scores -> "
                     f"MRR: {result.get('mrr', 0):.3f}, "
-                    f"nDCG@5: {result.get('ndcg_at_5', 0):.3f}, "
-                    f"P@5: {result.get('precision_at_5', 0):.3f}, "
-                    f"R@5: {result.get('recall_at_5', 0):.3f}")
+                    f"nDCG@R: {result.get('ndcg_at_r', 0):.3f}, "
+                    f"P@R: {result.get('precision_at_r', 0):.3f}, "
+                    f"R@R: {result.get('recall_at_r', 0):.3f}")
         
         logger.info(f"[Result A.2] Generation Scores -> "
                     f"F1: {result.get('f1', 0):.3f}, "
@@ -242,13 +223,13 @@ def run_evaluation(eval_dir=EVALUATION_DATA_PATHS, result_dir=RESULTS_CSV_PATH, 
         logger.info(f"[Result A.3] Latency: {result['latency_ms']:.1f}ms")
         logger.info(" ")
     
-    logger.info("Calculating aggregated metrics.....")
+    logger.info("[Stage 03] Calculating aggregated metrics.....")
     successful_results = [r for r in results if r['success']]
     if successful_results:
-        logger.info("Aggregating metrics for successful results.....")
+        logger.info("[Stage 03] Aggregating metrics for successful results.....")
         metrics_to_average = [
             # retrieval metrics
-            'mrr', 'ndcg_at_5', 'precision_at_5', 'recall_at_5'
+            'mrr', 'ndcg_at_r', 'precision_at_r', 'recall_at_r'
             # generation metrics
             'f1', 'precision', 'recall', 'exact_match',
             'rouge_l_f1', 'rouge_l_precision', 'rouge_l_recall',
@@ -258,7 +239,7 @@ def run_evaluation(eval_dir=EVALUATION_DATA_PATHS, result_dir=RESULTS_CSV_PATH, 
         
         avg_metrics = {}
         for metric in metrics_to_average:
-            logger.debug("Check if metric exists in successful results")
+            logger.debug("[Stage 03] Check if metric exists in successful results")
             if metric in successful_results[0]:
                 avg_metrics[f'avg_{metric}'] = sum(r[metric] for r in successful_results) / len(successful_results)
         
@@ -270,9 +251,9 @@ def run_evaluation(eval_dir=EVALUATION_DATA_PATHS, result_dir=RESULTS_CSV_PATH, 
         logger.info(" ")
         logger.info("AVERAGE RETRIEVAL METRICS:")
         logger.info(f" [01] Average MRR: {avg_metrics.get('avg_mrr', 0):.3f}")
-        logger.info(f" [02] Average nDCG@5: {avg_metrics.get('avg_ndcg_at_5', 0):.3f}")
-        logger.info(f" [03] Average Precision@5: {avg_metrics.get('avg_precision_at_5', 0):.3f}")
-        logger.info(f" [04] Average Recall@5: {avg_metrics.get('avg_recall_at_5', 0):.3f}")
+        logger.info(f" [02] Average nDCG@R: {avg_metrics.get('avg_ndcg_at_r', 0):.3f}")
+        logger.info(f" [03] Average Precision@R: {avg_metrics.get('avg_precision_at_r', 0):.3f}")
+        logger.info(f" [04] Average Recall@R: {avg_metrics.get('avg_recall_at_r', 0):.3f}")
         
         logger.info(" ")
         logger.info("AVERAGE GENERATION METRICS:")
@@ -294,10 +275,9 @@ def run_evaluation(eval_dir=EVALUATION_DATA_PATHS, result_dir=RESULTS_CSV_PATH, 
         logger.info("AVERAGE LATENCY (ms/query) :")
         logger.info(f" [18] Average Latency: {avg_metrics.get('avg_latency_ms', 0):.1f}ms")
     
-    logger.info("Saving results to CSV.....")
-    # save_results_to_csv(results, result_dir, logger)
+    logger.info("[Stage 03] Saving results to CSV.....")
     append_new_results_to_csv(results, result_dir, logger)
-    logger.info(f"Saved results to CSV in {result_dir}")
+    logger.info(f"[Stage 03] Saved results to CSV in {result_dir}")
     
     logger.info("++++++++RAG Evaluation Completed")
     return results

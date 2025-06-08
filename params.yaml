@@ -25,6 +25,7 @@ BATCH_SIZE: 64
 K: 10
 R: 5
 N: 3
+MAX_N: 4
 
 ENCODING_MODEL: "cl100k_base"
 # EMBEDDING_MODEL: "BAAI/bge-small-en"
