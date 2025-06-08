@@ -10,7 +10,7 @@ LOG_PATH: "logs"
 SOURCE_DATA_PATH: "artifacts/data/collected_data/"
 SOURCE_DIRS: ["arxiv", "pdfs", "core"]
 DATA_PATH: "artifacts/data/grouped_data/"
-GROUPED_DIRS: ["group_9"]
+GROUPED_DIRS: ["group_13"]
 CHROMA_DB_PATH: "chromadb"
 
 QUERY_TEXT: "What depths were used for monitoring soil suction using the miniature tensiometer at the Boissy-le-Châtel site?"
@@ -27,7 +27,7 @@ R: 5
 N: 3
 
 ENCODING_MODEL: "cl100k_base"
-# EMBEDDING_MODEL: "BAAI/bge-small-en"
-EMBEDDING_MODEL: "intfloat/multilingual-e5-large-instruct"
+EMBEDDING_MODEL: "BAAI/bge-small-en"
+# EMBEDDING_MODEL: "intfloat/multilingual-e5-large-instruct"
 RE_RANK_MODEL: "cross-encoder/ms-marco-MiniLM-L-6-v2"
-LOCAL_LLM: "llama3.2"
+LOCAL_LLM: "llama3.2:1b"
