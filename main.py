@@ -57,17 +57,17 @@ def main():
         #     logger.debug(traceback.format_exc())
         #     return
         
-        # try:
-        #     logger.info(" ")
-        #     logger.info("----------STARTING [STAGE 01] POPULATE DB----------")
-        #     run_populate_db(args.reset)
-        #     # logger.info("Already Done. Skipping...")
-        #     logger.info("----------FINISHED [STAGE 01] POPULATE DB----------")
-        #     logger.info(" ")
-        # except Exception as e:
-        #     logger.error(f"ERROR RUNNING [STAGE 01] POPULATE DB: {e}")
-        #     logger.debug(traceback.format_exc())
-        #     return
+        try:
+            logger.info(" ")
+            logger.info("----------STARTING [STAGE 01] POPULATE DB----------")
+            run_populate_db(args.reset)
+            # logger.info("Already Done. Skipping...")
+            logger.info("----------FINISHED [STAGE 01] POPULATE DB----------")
+            logger.info(" ")
+        except Exception as e:
+            logger.error(f"ERROR RUNNING [STAGE 01] POPULATE DB: {e}")
+            logger.debug(traceback.format_exc())
+            return
         
         # try:
         #     logger.info(" ")
@@ -82,17 +82,17 @@ def main():
         #     logger.debug(traceback.format_exc())
         #     return
         
-        try:
-            logger.info(" ")
-            logger.info("----------STARTING [STAGE 03] EVALUATE QUERIES----------")
-            run_evaluation()
-            # logger.info("Already Done. Skipping...")
-            logger.info("----------FINISHED [STAGE 03] EVALUATE QUERIES----------")
-            logger.info(" ")
-        except Exception as e:
-            logger.error(f"ERROR RUNNING [STAGE 03] EVALUATE QUERIES: {e}")
-            logger.debug(traceback.format_exc())
-            return
+        # try:
+        #     logger.info(" ")
+        #     logger.info("----------STARTING [STAGE 03] EVALUATE QUERIES----------")
+        #     run_evaluation()
+        #     # logger.info("Already Done. Skipping...")
+        #     logger.info("----------FINISHED [STAGE 03] EVALUATE QUERIES----------")
+        #     logger.info(" ")
+        # except Exception as e:
+        #     logger.error(f"ERROR RUNNING [STAGE 03] EVALUATE QUERIES: {e}")
+        #     logger.debug(traceback.format_exc())
+        #     return
         
         logger.info("////--//--//----FINISHED [PIPELINE 02] RAG PIPELINE----//--//--////")
         logger.info(" ")

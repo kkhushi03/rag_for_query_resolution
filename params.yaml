@@ -10,7 +10,7 @@ LOG_PATH: "logs"
 SOURCE_DATA_PATH: "artifacts/data/collected_data/"
 SOURCE_DIRS: ["arxiv", "pdfs", "core"]
 DATA_PATH: "artifacts/data/grouped_data/"
-GROUPED_DIRS: ["group_11"]
+GROUPED_DIRS: ["group_12"]
 CHROMA_DB_PATH: "chromadb"
 
 QUERY_TEXT: "What depths were used for monitoring soil suction using the miniature tensiometer at the Boissy-le-Châtel site?"
