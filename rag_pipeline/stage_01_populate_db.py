@@ -1,4 +1,4 @@
-import os, json, shutil, gc, traceback, pickle
+import os, json, shutil, gc, traceback
 from tqdm import tqdm
 from pathlib import Path
 from utils.config import CONFIG
@@ -204,7 +204,7 @@ def calc_chunk_ids(chunks, base_data_path, logger):
         logger.debug(traceback.format_exc())
         return chunks
 
-def filter_and_embed_chunks(chunks: List[Document], lower_limit, upper_limit, logger) -> List[Document]:
+def filter_and_embed_chunks(chunks: List[Document], lower_limit: int, upper_limit: int, logger) -> List[Document]:
     logger.info("[Stage 01, Part 08.4.1] Applying custom (token-based) filtering on chunks before ingestion...")
     
     try:
