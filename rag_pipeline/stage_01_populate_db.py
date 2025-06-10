@@ -26,7 +26,7 @@ CHUNK_SIZE = CONFIG["CHUNK_SIZE"]
 CHUNK_LOWER_LIMIT = CONFIG["CHUNK_LOWER_LIMIT"]
 CHUNK_UPPER_LIMIT = CONFIG["CHUNK_UPPER_LIMIT"]
 CHUNK_OVERLAP = CONFIG["CHUNK_OVERLAP"]
-BATCH_SIZE = CONFIG["BATCH_SIZE"]
+INGEST_BATCH_SIZE = CONFIG["INGEST_BATCH_SIZE"]
 
 # setup logging
 LOG_DIR = os.path.join(os.getcwd(), LOG_PATH)
@@ -149,17 +149,17 @@ def split_docs(docs: List[Document], chunk_size: int, chunk_overlap: int, logger
         logger.debug(traceback.format_exc())
         return []
 
-def process_in_batches(documents, batch_size, ingest_fn, logger):
+def process_in_batches(documents, ingest_batch_size, ingest_fn, logger):
     total = len(documents)
-    logger.info(f"[Stage 01, Part 09] Processing {total} documents in batches of {batch_size}...")
+    logger.info(f"[Stage 01, Part 09] Processing {total} documents in batches of {ingest_batch_size}...")
 
-    for i in tqdm(range(0, total, batch_size), desc="Ingesting batches"):
-        batch = documents[i:i + batch_size]
+    for i in tqdm(range(0, total, ingest_batch_size), desc="Ingesting batches"):
+        batch = documents[i:i + ingest_batch_size]
         try:
             ingest_fn(batch)
-            logger.info(f"[Stage 01, Part 10] Ingested batch {i // batch_size}")
+            logger.info(f"[Stage 01, Part 10] Ingested batch {i // ingest_batch_size}")
         except Exception as e:
-            logger.error(f"Failed to ingest batch {i // batch_size}: {e}")
+            logger.error(f"Failed to ingest batch {i // ingest_batch_size}: {e}")
             logger.debug(traceback.format_exc())
 
 def calc_chunk_ids(chunks, base_data_path, logger):
@@ -217,7 +217,7 @@ def filter_and_embed_chunks(chunks: List[Document], lower_limit, upper_limit, lo
     logger.info(f"[Stage 01, Part 14.6.2(b)] Chunks remaining after filter: {len(filtered)}")
     return filtered
 
-def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, lower_limit, upper_limit, batch_size, logger):
+def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, lower_limit, upper_limit, ingest_batch_size, logger):
     try:
         logger.info("[Stage 01, Part 13] Saving chunks to Chroma DB.....")
         
@@ -265,7 +265,7 @@ def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, low
             logger.info("[Stage 01, Part 14.7(a)] Ingesting new filtered chunks to DB in batches...")
             process_in_batches(
                 documents=filtered_chunks,
-                batch_size=batch_size,
+                ingest_batch_size=ingest_batch_size,
                 ingest_fn=lambda batch: db.add_documents(batch, ids=[doc.metadata["chunk_id"] for doc in batch]),
                 logger=logger
             )
@@ -282,7 +282,7 @@ def clear_database(chroma_db_dir):
     if os.path.exists(chroma_db_dir):
         shutil.rmtree(chroma_db_dir)
 
-def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, base_data_path=DATA_PATH, grouped_dirs=GROUPED_DIRS, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, batch_size=BATCH_SIZE):
+def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, base_data_path=DATA_PATH, grouped_dirs=GROUPED_DIRS, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, ingest_batch_size=INGEST_BATCH_SIZE):
     try:
         logger = setup_logger("populate_db_logger", LOG_FILE)
         logger.info(" ")
@@ -311,7 +311,7 @@ def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, base_data_path=DA
             return
         # logger.info(f"First chunk: {chunks[0]}")
         
-        save_to_chroma_db(chunks, chroma_db_dir, base_data_path, lower_limit, upper_limit, batch_size, logger)
+        save_to_chroma_db(chunks, chroma_db_dir, base_data_path, lower_limit, upper_limit, ingest_batch_size, logger)
         
         # Manual memory cleanup
         del docs, flat_docs, chunks
