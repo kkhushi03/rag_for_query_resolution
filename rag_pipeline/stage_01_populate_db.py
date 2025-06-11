@@ -204,7 +204,7 @@ def calc_chunk_ids(chunks, base_data_path, logger):
         logger.debug(traceback.format_exc())
         return chunks
 
-def filter_and_embed_chunks(chunks: List[Document], lower_limit: int, upper_limit: int, logger) -> List[Document]:
+def filter_chunks(chunks: List[Document], lower_limit: int, upper_limit: int, logger) -> List[Document]:
     logger.info("[Stage 01, Part 08.4.1] Applying custom (token-based) filtering on chunks before ingestion...")
     
     try:
@@ -281,7 +281,7 @@ def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, low
         logger.info(f"[Stage 01, Part 08.4] No. of unique new chunks to add, after deduplication: {len(unique_new_chunks)}")
         
         # Step 5: Filter out empty content chunks
-        filtered_chunks = filter_and_embed_chunks(unique_new_chunks, lower_limit, upper_limit, logger)
+        filtered_chunks = filter_chunks(unique_new_chunks, lower_limit, upper_limit, logger)
         
         # Step 6: Ingest in batches
         if unique_new_chunks:
