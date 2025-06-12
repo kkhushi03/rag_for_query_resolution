@@ -1,65 +1,105 @@
 [
     {
-        "q_id": 1,
-        "question": "What depths were used for monitoring soil suction using the miniature tensiometer at the Boissy-le-Châtel site?",
-        "ground_truth": "The miniature tensiometer was used to monitor in situ soil suction at two depths: 25 cm and 45 cm.",
-        "difficulty": 1,
-        "sources": "['group_1/0801.2308v1.pdf:0:0', 'group_1/0801.2308v1.pdf:7:0', 'group_1/0801.2308v1.pdf:2:0']",
-        "correctness": 1
+    "question": "Why is there a push to replace the traditional C2F4H2-based gas mixture in RPC detectors with ecological alternatives?",
+    "ground truth": "Traditional C2F4H2-based gas mixtures used in Resistive Plate Chambers (RPCs) have a very high Global Warming Potential (GWP), prompting a push to find ecological alternatives. Although closed loop systems reduce gas emissions, they are expensive and prone to leaks. Hence, ecological gases like HFO-1234ze (C3F4H2) with significantly lower GWP are being explored to achieve sustainability without compromising detector performance.",
+    "relevent doc ids": "group_1/0001.2308v1.pdf:0:0",
+    "difficulty": "medium",
+    "correctness": true
     },
+
     {
-        "q_id": 2,
-        "question": "Why does suction decrease more significantly at 45 cm depth than at 25 cm depth during rainfall periods?",
-        "ground_truth": "The more significant suction decrease at 45 cm depth is attributed to the hysteresis phenomenon in the soil’s water retention behavior. The retention curve at 45 cm depth is closer to the bounding drying curve, while at 25 cm it is closer to the wetting curve, leading to a more pronounced decrease in suction during rainfalls at the deeper level."
+    "question": "What is the main advantage of YieldNet over traditional single-crop yield prediction models using remote sensing data?",
+    "ground truth": "YieldNet introduces a novel convolutional neural network framework that enables the simultaneous prediction of multiple crop yields (corn and soybean) using transfer learning. Unlike traditional models that require separate models for each crop, YieldNet shares the backbone feature extractor between crops and incorporates a new loss function for multi-target regression. This approach improves prediction accuracy and reduces computational costs by eliminating the need for training multiple models.",
+    "relevent doc ids": "group_2/0001.2308v1.pdf:0:0",
+    "difficulty": "medium",
+    "correctness": true
     },
+
     {
-        "q_id": 3,
-        "question": "What is the main purpose of using Machine Learning in the African agricultural sector?",
-        "ground_truth": "To reduce uncertainties and risk across sectors, in this case, the agricultural sector, by making predictions and improving yields, mitigating losses, and effective management of natural resources."
+    "question": "According to the text, AI technology in farming is primarily used for automating irrigation systems only.",
+    "ground truth": "The text discusses AI's broad role in farming, including problem-solving, decision-making, market demand analysis, autopilot machinery, and modeling. It does not state or imply that its primary function is limited to automating irrigation.",
+    "relevent doc ids": "group_3/0001.2308v1.pdf:0:0",
+    "difficulty": "low",
+    "correctness": false
     },
+
     {
-        "q_id": 4,
-        "question": "What are the three main types of machine learning techniques mentioned?",
-        "ground_truth": "Supervised learning, Unsupervised learning, and Reinforcement learning."
+    "question": "Is the primary aim of using a digital twin in food systems to collect as much general-purpose data as possible, regardless of relevance?",
+    "ground truth": "No, the introduction clearly states that while digital twins are often seen as general-purpose data collectors, the focus here is on creating specific goal-oriented indicators. These indicators provide cleaner, more relevant data to inform decision-making and address key issues in food systems effectively.",
+    "relevent doc ids": "group_4/0001.2308v1.pdf:0:0",
+    "difficulty": "medium",
+    "correctness": false
     },
+
     {
-        "q_id": 5,
-        "question": "What is supervised learning in the context of machine learning?",
-        "ground_truth": "Supervised learning is used when explanatory variables and their corresponding labels are available. The machine learns the interrelationships between them and generates predictions based on new inputs."
+    "question": "Can ancient agricultural terraces in the Negev desert only be detected through traditional ground surveys due to their burial beneath the soil?",
+    "ground truth": "No, while traditional ground surveys are limited in scale, the paper highlights that modern imaging techniques, including aerial RGB and LiDAR data, along with deep learning methods like DeepLabv3+ and U-Net, enable large-scale detection of both exposed and buried stonewalls through vegetation patterns and terrain features.",
+    "relevent doc ids": "group_5/0001.2308v1.pdf:0:0",
+    "difficulty": "high",
+    "correctness": false
     },
+
     {
-        "q_id": 6,
-        "question": "Why is reinforcement learning considered different from supervised and unsupervised learning?",
-        "ground_truth": "Reinforcement learning builds the dataset along the learning process and involves a reward system where the machine learns from outcomes based on actions it takes."
+    "question": "What is the main goal of GAISSALabel in the context of machine learning sustainability?",
+    "ground truth": "GAISSALabel aims to provide a practical, web-based tool for evaluating and labeling the energy efficiency of machine learning models. It offers a comprehensive assessment of both training and inference phases, promotes environmental sustainability, and introduces a labeling system similar to energy labels on appliances to foster shared understanding within the ML community.",
+    "relevent doc ids": "group_6/0001.2308v1.pdf:0:0",
+    "difficulty": "medium",
+    "correctness": true
     },
+
     {
-        "q_id": 7,
-        "question": "What algorithm enabled significant advancements in neural network training?",
-        "ground_truth": "The backpropagation algorithm."
+    "question": "Why is reducing methane emissions considered an effective short-term strategy for mitigating climate change?",
+    "ground truth": "Methane has a much higher global warming potential than carbon dioxide over a 20-year period and a relatively short atmospheric lifetime of approximately 9 years. This means that reducing methane emissions can lead to rapid decreases in atmospheric warming, making it a powerful tool for meeting short-term climate goals like those set in the Paris Agreement.",
+    "relevent doc ids": "group_7/0001.2308v1.pdf:0:0",
+    "difficulty": "medium",
+    "correctness": true
     },
+
     {
-        "q_id": 8,
-        "question": "Why is ML seen as evolving faster than traditional regression techniques?",
-        "ground_truth": "ML practitioners rely on experiments to show performance, allowing faster evolution compared to regression techniques, which usually need theoretical proof for adoption."
+    "question": "Is the ROC curve one of the evaluation methods included in the evalprob4cast package for assessing ensemble forecasts?",
+    "ground truth": "Yes, the evalprob4cast package includes the ROC (Receiver Operating Characteristic) curve as one of its supported evaluation tools, alongside other methods like CRPS, Brier Score, and reliability diagrams.",
+    "relevent doc ids": "group_8/0001.2308v1.pdf:0:0",
+    "difficulty": "low",
+    "correctness": true
     },
+
     {
-        "q_id": 9,
-        "question": "How is machine learning impacting the food system in agriculture?",
-        "ground_truth": "ML impacts farm operations, seed selection, planting periods, market prices, and distribution by making predictions and prescriptions to reduce risk and uncertainty in decision-making."
+    "question": "Did the implementation of the 'National Project on Management of Soil Health and Fertility' (NPMSF) begin in 2015 to address the imbalance in NPK usage?",
+    "ground truth": "No, the NPMSF scheme was initiated in 2008–09 by the Government of India to address the imbalance in NPK usage across states. The claim that it began in 2015 is incorrect.",
+    "relevent doc ids": "group_9/0001.2308v1.pdf:0:0",
+    "difficulty": "high",
+    "correctness": false
     },
+
     {
-        "q_id": 10,
-        "question": "What are some limitations of sensing technologies in agriculture that ML can address?",
-        "ground_truth": "Sensing technologies tend to measure only one or two parameters and aren't suitable for predicting values, while ML can combine multivariate inputs for better predictive accuracy."
+    "question": "Did the study on price fluctuations of perishable commodities like onion, grapes, and basmati rice combine both primary and secondary data for its analysis?",
+    "ground truth": "Yes, the study integrated secondary data from 2001 to 2014 with in-depth primary data surveys across key producing states. This approach was used to analyze price spreads, cultivation economics, marketing channels, and stakeholder profitability.",
+    "relevent doc ids": "group_10/0001.2308v1.pdf:0:0",
+    "difficulty": "low",
+    "correctness": true
     },
+
     {
-        "q_id": 11,
-        "question": "What percentage of African farms are under 5 hectares?",
-        "ground_truth": "95% of African farm sizes are less than 5 hectares."
+    "question": "Was village Gulumb chosen for the study because it had never been surveyed before and was completely rural with no urban ties?",
+    "ground truth": "No, village Gulumb was specifically selected because it had a history of repeated surveys since 1936–37 by the Gokhale Institute and was considered a moderately developed village. It also currently has strong ties to nearby urban centers like Pune and Satara.",
+    "relevent doc ids": "group_11/0001.2308v1.pdf:0:0",
+    "difficulty": "high",
+    "correctness": false
     },
+
     {
-        "q_id": 12,
-        "question": "Why is agricultural yield prediction important in the African context?",
-        "ground_truth": "It helps optimize farm operations, reduces hidden losses, and addresses uncertainties such as erratic rainfall, inadequate planting periods, and biophysical parameter variability."
+    "question": "Did the study on West Bengal's agricultural growth using modern time series techniques find no evidence of acceleration in foodgrain production during the 1980s?",
+    "ground truth": "No, the study actually found statistically significant evidence of acceleration in the growth rate of foodgrain, rice, and particularly aman rice production in the 1980s, attributed to an increase in aman rice yield starting in 1980–81.",
+    "relevent doc ids": "group_12/IAgSciAbs-jan-jun-2015.pdf:0:0",
+    "difficulty": "high",
+    "correctness": false
+    },
+
+    {
+    "question": "क्या 2024-25 में चावल का उत्पादन पिछले वर्ष 2023-24 की तुलना में कम रहा?",
+    "ground truth": "2023-24 में चावल का उत्पादन 1132.59 लाख टन था, जबकि 2024-25 में यह बढ़कर 1218.54 लाख टन हो गया। इसका मतलब है कि चावल का उत्पादन बढ़ा है, कम नहीं हुआ।",
+    "relevent doc ids": ["group_13/0001.2308v1.pdf:0:0"],
+    "difficulty": "medium",
+    "correctness": false
     }
 ]
