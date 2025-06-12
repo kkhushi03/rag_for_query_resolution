@@ -4,10 +4,10 @@ import traceback
 from utils.logger import setup_logger
 from utils.config import CONFIG
 # from data_collection_pipeline.data_collection_main import run_data_collection_pipeline
-# from rag_pipeline.stage_00_clean_data_paths import run_clean_data_paths
-from rag_pipeline.stage_01_populate_db import run_populate_db
-from rag_pipeline.stage_02_query_data import run_query_rag
-from rag_pipeline.stage_03_eval_queries import run_evaluation
+# from rag_pipeline_chroma.stage_00_clean_data_paths import run_clean_data_paths
+from rag_pipeline_chroma.stage_01_populate_db import run_populate_db
+from rag_pipeline_chroma.stage_02_query_data import run_query_rag
+from rag_pipeline_chroma.stage_03_eval_queries import run_evaluation
 
 # configurations
 QUERY_TEXT = CONFIG["QUERY_TEXT"]
