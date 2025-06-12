@@ -10,7 +10,7 @@ LOG_PATH: "logs"
 SOURCE_DATA_PATH: "artifacts/data/collected_data/"
 SOURCE_DIRS: ["arxiv", "pdfs", "core"]
 DATA_PATH: "artifacts/data/grouped_data/"
-GROUPED_DIRS: ["group_12"]
+GROUPED_DIRS: ["group_13"]
 
 CHUNKS_OUT_PATH: "artifacts/model_inferences/chunks/chunks.jsonl"
 EMBEDDINGS_OUT_PATH: "artifacts/model_inferences/embeddings/embeddings.pkl"
