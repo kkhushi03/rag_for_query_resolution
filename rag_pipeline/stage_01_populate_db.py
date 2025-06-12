@@ -4,6 +4,7 @@ from pathlib import Path
 from utils.config import CONFIG
 from utils.logger import setup_logger
 from utils.get_llm_func import embedding_func, num_tokens
+from utils.populate_db.loading_funcs import load_embedded_chunks
 from typing import List
 from langchain.schema import Document
 from langchain_community.document_loaders import PyMuPDFLoader
@@ -12,16 +13,12 @@ from langchain_chroma import Chroma
 
 
 # configurations
-LOG_PATH = CONFIG["LOG_PATH"]
-LOG_PATH = Path(LOG_PATH)
-DATA_PATH = CONFIG["DATA_PATH"]
-DATA_PATH = Path(DATA_PATH)
+LOG_PATH = Path(CONFIG["LOG_PATH"])
+DATA_PATH = Path(CONFIG["DATA_PATH"])
 GROUPED_DIRS = CONFIG["GROUPED_DIRS"]
 
-CHUNKS_OUT_PATH = CONFIG["CHUNKS_OUT_PATH"]
-CHUNKS_OUT_PATH = Path(CHUNKS_OUT_PATH)
-EMBEDDINGS_OUT_PATH = CONFIG["EMBEDDINGS_OUT_PATH"]
-EMBEDDINGS_OUT_PATH = Path(EMBEDDINGS_OUT_PATH)
+CHUNKS_OUT_PATH = Path(CONFIG["CHUNKS_OUT_PATH"])
+EMBEDDINGS_OUT_PATH = Path(CONFIG["EMBEDDINGS_OUT_PATH"])
 CHROMA_DB_PATH = CONFIG["CHROMA_DB_PATH"]
 
 CHUNK_SIZE = CONFIG["CHUNK_SIZE"]
@@ -228,48 +225,12 @@ def process_in_batches(documents, ingest_batch_size: int, ingest_fn, logger):
         batch = documents[i:i + ingest_batch_size]
         try:
             ingest_fn(batch)
-            logger.info(f"[Stage 01, Part 09.2] Ingested batch {i // ingest_batch_size}")
+            logger.info(f"[Stage 01, Part 09.2] Ingested batch {i // ingest_batch_size + 1}")
         except Exception as e:
-            logger.error(f"[Stage 01, Part 09] Failed to ingest batch {i // ingest_batch_size}: {e}")
+            logger.error(f"[Stage 01, Part 09] Failed to ingest batch {i // ingest_batch_size + 1}: {e}")
             logger.debug(traceback.format_exc())
 
-def embed_and_save_chunks(chunks: List[Document], lower_limit: int, upper_limit: int, ingest_batch_size: int, embeddings_dir: str, logger) -> List[Document]:
-    try:
-        # Step 1: Filter using your existing function
-        filtered_chunks = filter_chunks(chunks, lower_limit, upper_limit, logger)
-
-        # Step 2: Extract text, metadata, and ids
-        contents = [doc.page_content.strip() for doc in filtered_chunks]
-        metas = [doc.metadata for doc in filtered_chunks]
-        ids = [doc.metadata.get("chunk_id", None) for doc in filtered_chunks]
-
-        embeddings = []
-
-        # Step 3: Embed in batches using process_in_batches
-        def embed_batch(batch):
-            embedded = embedding_func().embed_documents(batch)
-            embeddings.extend(embedded)
-
-        logger.info(f"[Stage 01, Part 08.5] Starting embedding of {len(contents)} chunks in batches of {ingest_batch_size}...")
-        process_in_batches(contents, ingest_batch_size, embed_batch, logger)
-
-        # Step 4: Combine into embedded dicts
-        embedded = [{"embedding": e, "content": c, "metadata": m, "id": i}
-                    for e, c, m, i in zip(embeddings, contents, metas, ids)]
-
-        # Step 5: Save as pickle
-        logger.info(f"[Stage 01, Part 08.6] Saving {len(embedded)} embedded chunks to {embeddings_dir}")
-        embeddings_dir.parent.mkdir(parents=True, exist_ok=True)
-        with open(embeddings_dir, "wb") as f:
-            pickle.dump(embedded, f)
-
-        logger.info(f"[Stage 01, Part 08.7] Embedded chunks saved successfully.")
-    except Exception as e:
-        logger.error(f"[Stage 01, Part 08.8] Error in embed_and_save_chunks: {e}")
-        logger.debug(traceback.format_exc())
-
-
-def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, chunks_dir, embeddings_dir, lower_limit, upper_limit, ingest_batch_size, logger):
+def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger):
     try:
         logger.info("[Stage 01, Part 06] Saving chunks to Chroma DB.....")
         
@@ -330,11 +291,138 @@ def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, chu
         logger.debug(traceback.format_exc())
         return []
 
+# def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, chunks_dir, embeddings_dir, lower_limit, upper_limit, ingest_batch_size, logger, embedded_data=None, save_embeddings=True):
+#     try:
+#         logger.info("[Stage 01, Part 06] Saving chunks to Chroma DB.....")
+        
+#         # load the existing db
+#         db = Chroma(
+#             embedding_function=embedding_func(),
+#             persist_directory=chroma_db_dir,
+#         )
+#         logger.info(f"[Stage 01, Part 07] Loading existing DB from path: {chroma_db_dir}.....")
+        
+#         # calculate "page:chunk" IDs
+#         # Step 1: Assign chunk IDs
+#         chunks_with_ids = calc_chunk_ids(chunks, base_data_path, chunks_dir, logger)
+#         logger.info(f"[Stage 01, Part 08.1] Calculated chunk IDs for total {len(chunks_with_ids)} chunks")
+        
+#         # add/update the docs
+#         # Step 2: Get existing IDs from the DB
+#         existing_items = db.get(include=[]) # IDs are always included by default
+#         existing_ids = set(existing_items["ids"])
+#         logger.info(f"[Stage 01, Part 08.2] No. of existing items (i.e. docs) in the db: {len(existing_ids)}")
+        
+#         # only add docs that don't exist in the db
+#         # Step 3: Filter only new chunks
+#         new_chunks = []
+#         for chunk in chunks_with_ids:
+#             if chunk.metadata["chunk_id"] not in existing_ids:
+#                 new_chunks.append(chunk)
+#         logger.info(f"[Stage 01, Part 08.3] No. of new chunks to add: {len(new_chunks)}")
+        
+#         # Step 4: Safety Net — remove duplicates within `new_chunks` -> Deduplicate
+#         seen_ids = set()
+#         unique_new_chunks = []
+#         for chunk in new_chunks:
+#             cid = chunk.metadata["chunk_id"]
+#             if cid not in seen_ids:
+#                 seen_ids.add(cid)
+#                 unique_new_chunks.append(chunk)
+#         logger.info(f"[Stage 01, Part 08.4] No. of unique new chunks to add, after deduplication: {len(unique_new_chunks)}")
+        
+#         if not unique_new_chunks:
+#             logger.info("[Stage 01, Part 08.5] No new unique chunks to process. Database is up to date.")
+#             return
+        
+#         # Filter new chunks based on token limits
+#         filtered_new_chunks = filter_chunks(unique_new_chunks, lower_limit, upper_limit, logger)
+        
+#         if not filtered_new_chunks:
+#             logger.info("[Stage 01, Part 08.6] No valid (non-empty) chunks remaining after filtering")
+#             return
+        
+#         # Generate embeddings for new chunks only
+#         logger.info(f"[Stage 01, Part 09.1] Generating embeddings for {len(filtered_new_chunks)} new chunks...")
+        
+#         # Extract content for embedding
+#         contents = [doc.page_content.strip() for doc in filtered_new_chunks]
+#         metas = [doc.metadata for doc in filtered_new_chunks]
+#         ids = [doc.metadata.get("chunk_id", None) for doc in filtered_new_chunks]
+        
+#         # Generate embeddings in batches
+#         embeddings = []
+#         def embed_batch(batch):
+#             embedded = embedding_func().embed_documents(batch)
+#             embeddings.extend(embedded)
+        
+#         logger.info(f"[Stage 01, Part 09.2] Starting embedding of {len(contents)} new chunks in batches of {ingest_batch_size}...")
+#         process_in_batches(contents, ingest_batch_size, embed_batch, logger)
+        
+#         # Save embeddings to pickle file if requested
+#         if save_embeddings:
+#             logger.info(f"[Stage 01, Part 10.1] Saving {len(embeddings)} new embeddings to {embeddings_dir}")
+            
+#             # Load existing embeddings if file exists
+#             existing_embeddings = []
+#             if embeddings_dir.exists():
+#                 try:
+#                     with open(embeddings_dir, "rb") as f:
+#                         existing_embeddings = pickle.load(f)
+#                     logger.info(f"[Stage 01, Part 10.2] Loaded {len(existing_embeddings)} existing embeddings")
+#                 except Exception as e:
+#                     logger.warning(f"[Stage 01, Part 10.2] Failed to load existing embeddings: {e}")
+#                     existing_embeddings = []
+            
+#             # Combine new embeddings with existing ones
+#             new_embedded_data = [{"embedding": e, "content": c, "metadata": m, "id": i}
+#                                for e, c, m, i in zip(embeddings, contents, metas, ids)]
+            
+#             all_embedded_data = existing_embeddings + new_embedded_data
+            
+#             # Save combined embeddings
+#             embeddings_dir.parent.mkdir(parents=True, exist_ok=True)
+#             with open(embeddings_dir, "wb") as f:
+#                 pickle.dump(all_embedded_data, f)
+            
+#             logger.info(f"[Stage 01, Part 10.3] Saved {len(all_embedded_data)} total embedded chunks (existing + new)")
+        
+#         # Ingest new filtered chunks to Chroma DB in batches
+#         logger.info(f"[Stage 01, Part 11.1] Ingesting {len(filtered_new_chunks)} new filtered chunks to Chroma DB in batches...")
+#         process_in_batches(
+#             documents=filtered_new_chunks,
+#             ingest_batch_size=ingest_batch_size,
+#             ingest_fn=lambda batch: db.add_documents(batch, ids=[doc.metadata["chunk_id"] for doc in batch]),
+#             logger=logger
+#         )
+        
+#         logger.info("[Stage 01, Part 11.2] New chunks saved to Chroma DB successfully")        
+        
+#     except Exception as e:
+#         logger.error(f"[Stage 01, Part 11] Error saving to Chroma DB: {e}")
+#         logger.debug(traceback.format_exc())
+
 def clear_database(chroma_db_dir):
     if os.path.exists(chroma_db_dir):
         shutil.rmtree(chroma_db_dir)
 
-def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, base_data_path=DATA_PATH, chunks_dir=CHUNKS_OUT_PATH, embeddings_dir=EMBEDDINGS_OUT_PATH, grouped_dirs=GROUPED_DIRS, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, ingest_batch_size=INGEST_BATCH_SIZE):
+def clear_chunks(chunks_dir):
+    chunks_path = Path(chunks_dir)
+    if chunks_path.exists():
+        if chunks_path.is_file():
+            chunks_path.unlink()
+        elif chunks_path.is_dir():
+            shutil.rmtree(chunks_path)
+
+# def clear_embeddings(embeddings_dir):
+#     embeddings_path = Path(embeddings_dir)
+#     if embeddings_path.exists():
+#         if embeddings_path.is_file():
+#             embeddings_path.unlink()
+#         elif embeddings_path.is_dir():
+#             shutil.rmtree(embeddings_path)
+
+def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, base_data_path=DATA_PATH, chunks_dir=CHUNKS_OUT_PATH, embeddings_dir=EMBEDDINGS_OUT_PATH, grouped_dirs=GROUPED_DIRS, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, ingest_batch_size=INGEST_BATCH_SIZE, save_embeddings=True):
     try:
         logger = setup_logger("populate_db_logger", LOG_FILE)
         logger.info(" ")
@@ -342,8 +430,17 @@ def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, base_data_path=DA
         
         # check if the db should be cleared (using the --clear flag)
         if reset:
-            logger.info("[Stage 01, Part 00] (RESET DB) Clearing the database...")
+            logger.info("[Stage 01, Part 00.1] (RESET DB) Clearing the database...")
             clear_database(chroma_db_dir)
+            logger.info("[Stage 01, Part 00.1] (RESET DB) Database cleared successfully.")
+            
+            logger.info("[Stage 01, Part 00.2] (RESET DB) Clearing the chunks file...")
+            clear_chunks(chunks_dir)
+            logger.info("[Stage 01, Part 00.2] (RESET DB) Chunks file cleared successfully.")
+            
+            # logger.info("[Stage 01, Part 00.3] (RESET DB) Clearing the embeddings file...")
+            # clear_embeddings(embeddings_dir)
+            # logger.info("[Stage 01, Part 00.3] (RESET DB) Embeddings file cleared successfully.")
         
         # create (or update) the db
         # docs = load_docs(base_data_path, logger)
@@ -363,8 +460,9 @@ def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, base_data_path=DA
             return
         # logger.info(f"First chunk: {chunks[0]}")
         
-        # logger.info(f" [] Loaded {len(flat_docs)} docs, created {len(chunks)} chunks")        
-        save_to_chroma_db(chunks, chroma_db_dir, base_data_path, chunks_dir, embeddings_dir, lower_limit, upper_limit, ingest_batch_size, logger)
+        # logger.info(f" [] Loaded {len(flat_docs)} docs, created {len(chunks)} chunks")
+        save_to_chroma_db(chunks, chroma_db_dir, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger)
+        # save_to_chroma_db(chunks, chroma_db_dir, base_data_path, chunks_dir, embeddings_dir, lower_limit, upper_limit, ingest_batch_size, logger, save_embeddings)
         
         # Manual memory cleanup
         del docs, flat_docs, chunks
