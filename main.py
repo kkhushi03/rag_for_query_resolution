@@ -4,10 +4,10 @@ import traceback
 from utils.logger import setup_logger
 from utils.config import CONFIG
 # from data_collection_pipeline.data_collection_main import run_data_collection_pipeline
-# from rag_pipeline.stage_00_clean_data_paths import run_clean_data_paths
-from rag_pipeline.stage_01_populate_db import run_populate_db
-from rag_pipeline.stage_02_query_data import run_query_rag
-from rag_pipeline.stage_03_eval_queries import run_evaluation
+# from rag_pipeline_chroma.stage_00_clean_data_paths import run_clean_data_paths
+from rag_pipeline_chroma.stage_01_populate_db import run_populate_db
+from rag_pipeline_chroma.stage_02_query_data import run_query_rag
+from rag_pipeline_chroma.stage_03_eval_queries import run_evaluation
 
 # configurations
 QUERY_TEXT = CONFIG["QUERY_TEXT"]
@@ -57,17 +57,17 @@ def main():
         #     logger.debug(traceback.format_exc())
         #     return
         
-        # try:
-        #     logger.info(" ")
-        #     logger.info("----------STARTING [STAGE 01] POPULATE DB----------")
-        #     run_populate_db(args.reset)
-        #     # logger.info("Already Done. Skipping...")
-        #     logger.info("----------FINISHED [STAGE 01] POPULATE DB----------")
-        #     logger.info(" ")
-        # except Exception as e:
-        #     logger.error(f"ERROR RUNNING [STAGE 01] POPULATE DB: {e}")
-        #     logger.debug(traceback.format_exc())
-        #     return
+        try:
+            logger.info(" ")
+            logger.info("----------STARTING [STAGE 01] POPULATE DB----------")
+            run_populate_db(args.reset)
+            # logger.info("Already Done. Skipping...")
+            logger.info("----------FINISHED [STAGE 01] POPULATE DB----------")
+            logger.info(" ")
+        except Exception as e:
+            logger.error(f"ERROR RUNNING [STAGE 01] POPULATE DB: {e}")
+            logger.debug(traceback.format_exc())
+            return
         
         # try:
         #     logger.info(" ")
@@ -82,17 +82,17 @@ def main():
         #     logger.debug(traceback.format_exc())
         #     return
         
-        try:
-            logger.info(" ")
-            logger.info("----------STARTING [STAGE 03] EVALUATE QUERIES----------")
-            run_evaluation()
-            # logger.info("Already Done. Skipping...")
-            logger.info("----------FINISHED [STAGE 03] EVALUATE QUERIES----------")
-            logger.info(" ")
-        except Exception as e:
-            logger.error(f"ERROR RUNNING [STAGE 03] EVALUATE QUERIES: {e}")
-            logger.debug(traceback.format_exc())
-            return
+        # try:
+        #     logger.info(" ")
+        #     logger.info("----------STARTING [STAGE 03] EVALUATE QUERIES----------")
+        #     run_evaluation()
+        #     # logger.info("Already Done. Skipping...")
+        #     logger.info("----------FINISHED [STAGE 03] EVALUATE QUERIES----------")
+        #     logger.info(" ")
+        # except Exception as e:
+        #     logger.error(f"ERROR RUNNING [STAGE 03] EVALUATE QUERIES: {e}")
+        #     logger.debug(traceback.format_exc())
+        #     return
         
         logger.info("////--//--//----FINISHED [PIPELINE 02] RAG PIPELINE----//--//--////")
         logger.info(" ")

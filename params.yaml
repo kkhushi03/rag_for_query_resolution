@@ -10,7 +10,10 @@ LOG_PATH: "logs"
 SOURCE_DATA_PATH: "artifacts/data/collected_data/"
 SOURCE_DIRS: ["arxiv", "pdfs", "core"]
 DATA_PATH: "artifacts/data/grouped_data/"
-GROUPED_DIRS: ["group_11"]
+GROUPED_DIRS: ["group_13"]
+
+CHUNKS_OUT_PATH: "artifacts/model_inferences/chunks/chunks.jsonl"
+EMBEDDINGS_OUT_PATH: "artifacts/model_inferences/embeddings/embeddings.pkl"
 CHROMA_DB_PATH: "chromadb"
 
 QUERY_TEXT: "What depths were used for monitoring soil suction using the miniature tensiometer at the Boissy-le-Châtel site?"
@@ -22,6 +25,7 @@ CHUNK_OVERLAP: 50
 CHUNK_LOWER_LIMIT: 100
 CHUNK_UPPER_LIMIT: 500
 BATCH_SIZE: 64
+INGEST_BATCH_SIZE: 64
 K: 10
 R: 5
 N: 3
