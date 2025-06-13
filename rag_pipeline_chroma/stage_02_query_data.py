@@ -1,5 +1,4 @@
-import os
-import traceback
+import os, traceback
 from pathlib import Path
 from utils.config import CONFIG
 from utils.logger import setup_logger

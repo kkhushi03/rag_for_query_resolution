@@ -6,6 +6,7 @@ langchain-ollama
 # unstructured
 onnxruntime
 chromadb
+faiss-cpu
 pymupdf
 pytest
 pyyaml

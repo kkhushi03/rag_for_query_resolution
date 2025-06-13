@@ -1,7 +1,4 @@
-import os
-import re
-import shutil
-import traceback
+import os, re, shutil, traceback
 from pathlib import Path
 from utils.config import CONFIG
 from utils.logger import setup_logger
