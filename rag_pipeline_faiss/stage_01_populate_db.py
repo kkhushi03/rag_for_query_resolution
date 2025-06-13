@@ -1,4 +1,4 @@
-import os, json, shutil, gc, traceback, pickle
+import os, json, shutil, gc, traceback
 from tqdm import tqdm
 from pathlib import Path
 from utils.config import CONFIG
@@ -8,7 +8,7 @@ from typing import List
 from langchain.schema import Document
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 
 
 # configurations
@@ -17,7 +17,6 @@ DATA_PATH = Path(CONFIG["DATA_PATH"])
 GROUPED_DIRS = CONFIG["GROUPED_DIRS"]
 
 CHUNKS_OUT_PATH_FAISS = Path(CONFIG["CHUNKS_OUT_PATH_FAISS"])
-EMBEDDINGS_OUT_PATH_FAISS = Path(CONFIG["EMBEDDINGS_OUT_PATH_FAISS"])
 FAISS_DB_PATH = CONFIG["FAISS_DB_PATH"]
 
 CHUNK_SIZE = CONFIG["CHUNK_SIZE"]
@@ -112,7 +111,7 @@ def calc_chunk_ids(chunks, base_data_path, chunks_dir, logger):
         last_page_id = None
         curr_chunk_idx = 0
         
-        logger.info("[Stage 01, Part 07.1] Calculating chunk IDs...")
+        logger.info("[Stage 01, Part 06.1.1] Calculating chunk IDs...")
         for chunk in chunks:
             source = chunk.metadata.get("source")
             page = chunk.metadata.get("page")
@@ -136,24 +135,39 @@ def calc_chunk_ids(chunks, base_data_path, chunks_dir, logger):
             # logger.info("[Stage 01, Part 11.3] Adding chunk IDs to metadata...")
             chunk.metadata["chunk_id"] = chunk_id
         
-        logger.info("[Stage 01, Part 07.2] Chunk IDs calculated successfully.")
-        
-        logger.info(f"[Stage 01, Part 07.3] Saving these calculated Chunk IDs to a JSON file: {chunks_dir}.....")
-        chunks_dir.parent.mkdir(parents=True, exist_ok=True)
-        with open(chunks_dir, "w", encoding="utf-8") as f:
-            for chunk in chunks:
-                f.write(json.dumps({"content": chunk.page_content, "metadata": chunk.metadata}) + "\n")
-                logger.debug(f"[Stage 01, Part 07.3] Serialized chunk: {chunk}")
-        
-        logger.info(f"[Stage 01, Part 07.4] Saved these calculated Chunk IDs to a JSON file: {chunks_dir} successfully.")
+        logger.info("[Stage 01, Part 06.1.2] Chunk IDs calculated successfully.")
         return chunks
     except Exception as e:
-        logger.error(f"[Stage 01, Part 07] Error calculating chunk IDs: {e}")
+        logger.error(f"[Stage 01, Part 06.1] Error calculating chunk IDs: {e}")
         logger.debug(traceback.format_exc())
         return chunks
 
+def load_existing_chunks_metadata(chunks_dir, logger):
+    try:
+        if not os.path.exists(chunks_dir):
+            logger.warning(f"[Stage 01, Part 06.2] No existing chunks file found at {chunks_dir}")
+            return set()
+        
+        existing_ids = set()
+        with open(chunks_dir, "r", encoding="utf-8") as f:
+            for line in f:
+                try:
+                    chunk_data = json.loads(line.strip())
+                    chunk_id = chunk_data.get("metadata", {}).get("chunk_id")
+                    if chunk_id:
+                        existing_ids.add(chunk_id)
+                except json.JSONDecodeError:
+                    continue
+        
+        logger.info(f"[Stage 01, Part 06.2] Loaded {len(existing_ids)} existing chunk IDs")
+        return existing_ids
+    except Exception as e:
+        logger.error(f"[Stage 01, Part 06.2] Error loading existing chunks metadata: {e}")
+        logger.debug(traceback.format_exc())
+        return set()
+
 def filter_chunks(chunks: List[Document], lower_limit: int, upper_limit: int, logger) -> List[Document]:
-    logger.info("[Stage 01, Part 08.4.1] Applying custom (token-based) filtering on chunks before ingestion...")
+    logger.info("[Stage 01, Part 06.5.1] Applying custom (token-based) filtering on chunks before ingestion...")
     
     try:
         filtered = []
@@ -167,48 +181,95 @@ def filter_chunks(chunks: List[Document], lower_limit: int, upper_limit: int, lo
             # else:
             #     logger.warning(f"[Stage 01, Part 14.4.2(a)] Filtered out chunk ((tokens={token_len}, len={len(content)}): {chunk.metadata.get('chunk_id')}")
         
-        logger.info(f"[Stage 01, Part 08.4.2(a)] Chunks remaining before filter: {len(chunks)}")
-        logger.info(f"[Stage 01, Part 08.4.2(b)] Chunks remaining after filter: {len(filtered)}")
+        logger.info(f"[Stage 01, Part 06.5.2(a)] Chunks remaining before filter: {len(chunks)}")
+        logger.info(f"[Stage 01, Part 06.5.2(b)] Chunks remaining after filter: {len(filtered)}")
         return filtered
     except Exception as e:
-        logger.error(f"[Stage 01, Part 08.4] Error applying custom filtering on chunks: {e}")
+        logger.error(f"[Stage 01, Part 06.5] Error applying custom filtering on chunks: {e}")
         logger.debug(traceback.format_exc())
         return chunks
 
 def process_in_batches(documents, ingest_batch_size: int, ingest_fn, logger):
     total = len(documents)
-    logger.info(f"[Stage 01, Part 09.1] Processing {total} documents in batches of {ingest_batch_size}...")
+    logger.info(f"[Stage 01, Part 08.3] Processing {total} documents in batches of {ingest_batch_size}...")
 
     for i in tqdm(range(0, total, ingest_batch_size), desc="Ingesting batches"):
         batch = documents[i:i + ingest_batch_size]
         try:
             ingest_fn(batch)
-            logger.info(f"[Stage 01, Part 09.2] Ingested batch {i // ingest_batch_size}")
+            logger.info(f"[Stage 01, Part 08.4] Ingested batch {i // ingest_batch_size}")
         except Exception as e:
-            logger.error(f"[Stage 01, Part 09] Failed to ingest batch {i // ingest_batch_size}: {e}")
+            logger.error(f"[Stage 01, Part 08.4] Failed to ingest batch {i // ingest_batch_size}: {e}")
             logger.debug(traceback.format_exc())
 
-def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger):
+def save_processed_chunks_metadata(chunks, chunks_dir, logger):
+    # Save successfully processed chunks metadata to JSON file for tracking
     try:
-        logger.info("[Stage 01, Part 06] Saving chunks to Chroma DB.....")
+        logger.info(f"[Stage 01, Part 10.1.1] Saving processed chunks metadata to: {chunks_dir}")
+        chunks_dir.parent.mkdir(parents=True, exist_ok=True)
         
-        # load the existing db
-        db = Chroma(
-            embedding_function=embedding_func(),
-            persist_directory=chroma_db_dir,
-        )
-        logger.info(f"[Stage 01, Part 07] Loading existing DB from path: {chroma_db_dir}.....")
+        # Read existing data first
+        existing_data = []
+        if os.path.exists(chunks_dir):
+            with open(chunks_dir, "r", encoding="utf-8") as f:
+                for line in f:
+                    try:
+                        existing_data.append(json.loads(line.strip()))
+                    except json.JSONDecodeError:
+                        continue
         
+        # Append new chunks
+        with open(chunks_dir, "a", encoding="utf-8") as f:
+            for chunk in chunks:
+                chunk_data = {
+                    "content": chunk.page_content, 
+                    "metadata": chunk.metadata
+                }
+                f.write(json.dumps(chunk_data) + "\n")
+        
+        logger.info(f"[Stage 01, Part 10.1.2] Saved {len(chunks)} processed chunks to metadata file")
+        
+    except Exception as e:
+        logger.error(f"[Stage 01, Part 10.1] Error saving processed chunks metadata: {e}")
+        logger.debug(traceback.format_exc())
+    
+    # Load existing chunks metadata from JSON file to track what's already processed
+    try:
+        if not os.path.exists(chunks_dir):
+            logger.info(f"[Stage 01, Part 10.2.1] No existing chunks file found at {chunks_dir}")
+            return set()
+        
+        existing_ids = set()
+        with open(chunks_dir, "r", encoding="utf-8") as f:
+            for line in f:
+                try:
+                    chunk_data = json.loads(line.strip())
+                    chunk_id = chunk_data.get("metadata", {}).get("chunk_id")
+                    if chunk_id:
+                        existing_ids.add(chunk_id)
+                except json.JSONDecodeError:
+                    continue
+        
+        logger.info(f"[Stage 01, Part 10.2.2] Loaded {len(existing_ids)} existing chunk IDs")
+        return existing_ids
+    except Exception as e:
+        logger.error(f"[Stage 01, Part 10.2] Error loading existing chunks metadata: {e}")
+        logger.debug(traceback.format_exc())
+        return set()
+
+def save_to_faiss_db(chunks: list[Document], faiss_db_dir, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger):
+    try:
+        logger.info("[Stage 01, Part 06] Saving chunks to FAISS DB.....")
+
         # calculate "page:chunk" IDs
         # Step 1: Assign chunk IDs
         chunks_with_ids = calc_chunk_ids(chunks, base_data_path, chunks_dir, logger)
-        logger.info(f"[Stage 01, Part 08.1] Calculated chunk IDs for total {len(chunks_with_ids)} chunks")
+        logger.info(f"[Stage 01, Part 06.1] Calculated chunk IDs for total {len(chunks_with_ids)} chunks")
         
         # add/update the docs
-        # Step 2: Get existing IDs from the DB
-        existing_items = db.get(include=[]) # IDs are always included by default
-        existing_ids = set(existing_items["ids"])
-        logger.info(f"[Stage 01, Part 08.2] No. of existing items (i.e. docs) in the db: {len(existing_ids)}")
+        # Step 2: Load existing chunk IDs from metadata file (not from FAISS directly)
+        existing_ids = load_existing_chunks_metadata(chunks_dir, logger)
+        logger.info(f"[Stage 01, Part 06.2] No. of existing chunk IDs tracked: {len(existing_ids)}")
         
         # only add docs that don't exist in the db
         # Step 3: Filter only new chunks
@@ -216,7 +277,7 @@ def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, chu
         for chunk in chunks_with_ids:
             if chunk.metadata["chunk_id"] not in existing_ids:
                 new_chunks.append(chunk)
-        logger.info(f"[Stage 01, Part 08.3] No. of new chunks to add: {len(new_chunks)}")
+        logger.info(f"[Stage 01, Part 06.3] No. of new chunks to add: {len(new_chunks)}")
         
         # Step 4: Safety Net — remove duplicates within `new_chunks` -> Deduplicate
         seen_ids = set()
@@ -226,39 +287,97 @@ def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, chu
             if cid not in seen_ids:
                 seen_ids.add(cid)
                 unique_new_chunks.append(chunk)
-        logger.info(f"[Stage 01, Part 08.4] No. of unique new chunks to add, after deduplication: {len(unique_new_chunks)}")
+        logger.info(f"[Stage 01, Part 06.4] No. of unique new chunks to add, after deduplication: {len(unique_new_chunks)}")
         
         if not unique_new_chunks:
-            logger.info("[Stage 01, Part 08.4] No new unique chunks to process. Database is up to date.")
+            logger.info("[Stage 01, Part 06.4] No new unique chunks to process. Database is up to date.")
             return
         
-        # Step 5: Filter out empty content chunks
+        # Step 5: Filter out chunks outside token limits (especially empty content chunks)
         filtered_chunks = filter_chunks(unique_new_chunks, lower_limit, upper_limit, logger)
         if not filtered_chunks:
-            logger.info("[Stage 01, Part 08.5] No valid (non-empty) chunks remaining after filtering")
+            logger.info("[Stage 01, Part 06.5] No valid (non-empty) chunks remaining after filtering")
             return
         
-        # Step 6: Ingest in batches
-        if unique_new_chunks:
-            logger.info("[Stage 01, Part 09(a)] Ingesting new filtered chunks to DB in batches...")
-            process_in_batches(
-                documents=filtered_chunks,
-                ingest_batch_size=ingest_batch_size,
-                ingest_fn=lambda batch: db.add_documents(batch, ids=[doc.metadata["chunk_id"] for doc in batch]),
-                logger=logger
-            )
-        else:
-            logger.info("[Stage 01, Part 09(b)] No valid (non-empty) new unique chunks to add to DB")
+        # Step 6: Load or create FAISS index
+        faiss_db_dir = Path(faiss_db_dir)
+        faiss_db_dir.mkdir(parents=True, exist_ok=True)
         
-        logger.info("[Stage 01, Part 10] Chunks saved to Chroma DB successfully")        
+        index_path = faiss_db_dir / "index.faiss"
+        metadata_path = faiss_db_dir / "index.pkl"
+        
+        if index_path.exists() and metadata_path.exists():
+            # Load existing FAISS database
+            logger.info(f"[Stage 01, Part 07] Loading existing FAISS DB from path: {faiss_db_dir}...")
+            try:
+                db = FAISS.load_local(
+                    folder_path=str(faiss_db_dir),
+                    embeddings=embedding_func(),
+                    allow_dangerous_deserialization=True  # Required for loading pickled metadata
+                )
+                logger.info("[Stage 01, Part 07.1] Successfully loaded existing FAISS database")
+            except Exception as e:
+                logger.warning(f"[Stage 01, Part 07.1] Failed to load existing FAISS DB: {e}")
+                logger.info("[Stage 01, Part 07.2] Creating new FAISS database...")
+                db = None
+        else:
+            logger.info("[Stage 01, Part 07] No existing FAISS DB found. Will create new one.")
+            db = None
+        
+        # Step 7: Process chunks in batches
+        logger.info("[Stage 01, Part 08] Processing chunks in batches...")
+        
+        def add_batch_to_faiss(batch):
+            nonlocal db
+            try:
+                if db is None:
+                    # Create new FAISS database with first batch
+                    logger.info(f"[Stage 01, Part 8.1] Creating new FAISS DB with batch of {len(batch)} documents")
+                    db = FAISS.from_documents(
+                        documents=batch,
+                        embedding=embedding_func()
+                    )
+                else:
+                    # Add to existing database
+                    logger.info(f"[Stage 01, Part 08.2] Adding batch of {len(batch)} documents to existing FAISS DB")
+                    texts = [doc.page_content for doc in batch]
+                    metadatas = [doc.metadata for doc in batch]
+                    db.add_texts(texts=texts, metadatas=metadatas)
+                
+            except Exception as e:
+                logger.error(f"[Stage 01, Part 08] Error adding batch to FAISS: {e}")
+                logger.debug(traceback.format_exc())
+                raise e
+        
+        # Process in batches
+        process_in_batches(
+            documents=filtered_chunks,
+            ingest_batch_size=ingest_batch_size,
+            ingest_fn=add_batch_to_faiss,
+            logger=logger
+        )
+        
+        # Step 8: Save the updated FAISS database
+        if db is not None:
+            logger.info(f"[Stage 01, Part 09.1] Saving FAISS database to: {faiss_db_dir}...")
+            db.save_local(folder_path=str(faiss_db_dir))
+            logger.info("[Stage 01, Part 09.2] FAISS database saved successfully")
+            
+            # Step 9: Only after successful FAISS save, update the metadata tracking file
+            logger.info("[Stage 01, Part 10] Updating processed chunks metadata file...")
+            save_processed_chunks_metadata(filtered_chunks, chunks_dir, logger)
+        else:
+            logger.warning("[Stage 01, Part 10] No FAISS database to save")
+
+        logger.info("[Stage 01, Part 10] Chunks saved to FAISS DB successfully")
     except Exception as e:
-        logger.error(f"[Stage 01, Part 10] Error saving to Chroma DB: {e}")
+        logger.error(f"[Stage 01, Part 10] Error saving to FAISS DB: {e}")
         logger.debug(traceback.format_exc())
         return []
 
-def clear_database(chroma_db_dir):
-    if os.path.exists(chroma_db_dir):
-        shutil.rmtree(chroma_db_dir)
+def clear_database(faiss_db_dir):
+    if os.path.exists(faiss_db_dir):
+        shutil.rmtree(faiss_db_dir)
 
 def clear_chunks(chunks_dir):
     chunks_path = Path(chunks_dir)
@@ -268,7 +387,7 @@ def clear_chunks(chunks_dir):
         elif chunks_path.is_dir():
             shutil.rmtree(chunks_path)
 
-def run_populate_db(reset=False, chroma_db_dir=FAISS_DB_PATH, base_data_path=DATA_PATH, chunks_dir=CHUNKS_OUT_PATH_FAISS, embeddings_dir=EMBEDDINGS_OUT_PATH_FAISS, grouped_dirs=GROUPED_DIRS, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, ingest_batch_size=INGEST_BATCH_SIZE):
+def run_populate_db(reset=False, faiss_db_dir=FAISS_DB_PATH, base_data_path=DATA_PATH, chunks_dir=CHUNKS_OUT_PATH_FAISS, grouped_dirs=GROUPED_DIRS, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, ingest_batch_size=INGEST_BATCH_SIZE):
     try:
         logger = setup_logger("populate_db_logger", LOG_FILE)
         logger.info(" ")
@@ -277,7 +396,7 @@ def run_populate_db(reset=False, chroma_db_dir=FAISS_DB_PATH, base_data_path=DAT
         # check if the db should be cleared (using the --clear flag)
         if reset:
             logger.info("[Stage 01, Part 00.1] (RESET DB) Clearing the database...")
-            clear_database(chroma_db_dir)
+            clear_database(faiss_db_dir)
             logger.info("[Stage 01, Part 00.1] (RESET DB) Database cleared successfully.")
             
             logger.info("[Stage 01, Part 00.2] (RESET DB) Clearing the chunks file...")
@@ -286,23 +405,20 @@ def run_populate_db(reset=False, chroma_db_dir=FAISS_DB_PATH, base_data_path=DAT
         
         # create (or update) the db
         docs = load_docs(base_data_path, grouped_dirs, logger)
-        # logger.info(f"Loaded {len(docs)} docs")
         if not docs:
             logger.error("[Stage 01] No docs loaded. Exiting.")
             return
         
         flat_docs = flatten_docs(docs, logger)
-        # logger.info(f"First document: {docs[0]}")
         
         chunks = split_docs(flat_docs, chunk_size, chunk_overlap, logger)
-        # logger.info(f"Split into {len(chunks)} chunks")
         if not chunks:
             logger.error("[Stage 01] No chunks created. Exiting.")
             return
-        # logger.info(f"First chunk: {chunks[0]}")
         
-        # logger.info(f" [] Loaded {len(flat_docs)} docs, created {len(chunks)} chunks")
-        save_to_chroma_db(chunks, chroma_db_dir, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger)
+        logger.debug(f" [] Loaded {len(flat_docs)} docs, created {len(chunks)} chunks")
+        
+        save_to_faiss_db(chunks, faiss_db_dir, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger)
         
         # Manual memory cleanup
         del docs, flat_docs, chunks

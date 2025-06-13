@@ -1,5 +1,4 @@
-import os
-import traceback
+import os, traceback
 from pathlib import Path
 from utils.config import CONFIG
 from utils.logger import setup_logger
@@ -10,11 +9,9 @@ from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 
 
 # configurations
-LOG_PATH = CONFIG["LOG_PATH"]
-LOG_PATH = Path(LOG_PATH)
+LOG_PATH = Path(CONFIG["LOG_PATH"])
 CHROMA_DB_PATH = CONFIG["CHROMA_DB_PATH"]
-EVALUATION_DATA_PATHS = CONFIG["EVALUATION_DATA_PATHS"]
-EVALUATION_DATA_PATHS = Path(EVALUATION_DATA_PATHS)
+EVALUATION_DATA_PATHS = Path(CONFIG["EVALUATION_DATA_PATHS"])
 
 BATCH_SIZE = CONFIG["BATCH_SIZE"]
 K = CONFIG["K"]

@@ -1,8 +1,6 @@
-import os
-import json
-import traceback
-import time
+import os, json, traceback, time
 from datetime import datetime
+from pathlib import Path
 from typing import List, Dict, Any
 from utils.config import CONFIG
 from utils.logger import setup_logger
@@ -13,7 +11,7 @@ from utils.evaluation.save_n_update_results import append_new_results_to_csv
 
 
 # configurations
-LOG_PATH = CONFIG["LOG_PATH"]
+LOG_PATH = Path(CONFIG["LOG_PATH"])
 CHROMA_DB_PATH = CONFIG["CHROMA_DB_PATH"]
 EVALUATION_DATA_PATHS = CONFIG.get("EVALUATION_DATA_PATHS", [])
 RESULTS_CSV_PATH = CONFIG.get("RESULTS_CSV_PATH", "evaluation_results.csv")

@@ -1,20 +1,14 @@
-import os
-import re
-import shutil
-import traceback
+import os, re, shutil, traceback
 from pathlib import Path
 from utils.config import CONFIG
 from utils.logger import setup_logger
 
 
 # configuration
-LOG_PATH = CONFIG["LOG_PATH"]
-LOG_PATH = Path(LOG_PATH)
-SOURCE_DATA_PATH = CONFIG["SOURCE_DATA_PATH"]
-SOURCE_DATA_PATH = Path(SOURCE_DATA_PATH)
+LOG_PATH = Path(CONFIG["LOG_PATH"])
+SOURCE_DATA_PATH = Path(CONFIG["SOURCE_DATA_PATH"])
 SOURCE_DIRS = CONFIG["SOURCE_DIRS"]
-DATA_PATH = CONFIG["DATA_PATH"]
-DATA_PATH = Path(DATA_PATH)
+DATA_PATH = Path(CONFIG["DATA_PATH"])
 
 BATCH_SIZE = CONFIG["BATCH_SIZE"]
 
