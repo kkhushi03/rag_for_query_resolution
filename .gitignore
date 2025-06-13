@@ -165,5 +165,6 @@ artifacts/data/collected_data/
 artifacts/data/grouped_data/
 artifacts/data.zip
 
+artifacts/model_inferences/
 chromadb/
-chromadb/chroma.sqlite3
+faiss/

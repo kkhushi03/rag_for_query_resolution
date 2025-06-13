@@ -20,7 +20,7 @@ def main():
     
     # Create CLI.
     parser = argparse.ArgumentParser(description="MAIN WORKFLOW")
-    parser.add_argument("--reset", action="store_true", help="Reset FAISS DB before population")
+    # parser.add_argument("--reset", action="store_true", help="Reset FAISS DB before population")
     # parser.add_argument("query_text", type=str, help="The query text.")
     args = parser.parse_args()
     

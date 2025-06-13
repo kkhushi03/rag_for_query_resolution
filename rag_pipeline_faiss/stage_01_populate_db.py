@@ -1,4 +1,4 @@
-import os, json, shutil, gc, traceback, pickle
+import os, json, shutil, gc, traceback
 from tqdm import tqdm
 from pathlib import Path
 from utils.config import CONFIG
@@ -136,15 +136,6 @@ def calc_chunk_ids(chunks, base_data_path, chunks_dir, logger):
             chunk.metadata["chunk_id"] = chunk_id
         
         logger.info("[Stage 01, Part 06.1.2] Chunk IDs calculated successfully.")
-        
-        logger.info(f"[Stage 01, Part 06.1.3] Saving these calculated Chunk IDs to a JSON file: {chunks_dir}.....")
-        chunks_dir.parent.mkdir(parents=True, exist_ok=True)
-        with open(chunks_dir, "w", encoding="utf-8") as f:
-            for chunk in chunks:
-                f.write(json.dumps({"content": chunk.page_content, "metadata": chunk.metadata}) + "\n")
-                logger.debug(f"[Stage 01, Part 06.1.3] Serialized chunk: {chunk}")
-        
-        logger.info(f"[Stage 01, Part 06.1.4] Saved these calculated Chunk IDs to a JSON file: {chunks_dir} successfully.")
         return chunks
     except Exception as e:
         logger.error(f"[Stage 01, Part 06.1] Error calculating chunk IDs: {e}")
@@ -210,6 +201,61 @@ def process_in_batches(documents, ingest_batch_size: int, ingest_fn, logger):
         except Exception as e:
             logger.error(f"[Stage 01, Part 08.4] Failed to ingest batch {i // ingest_batch_size}: {e}")
             logger.debug(traceback.format_exc())
+
+def save_processed_chunks_metadata(chunks, chunks_dir, logger):
+    # Save successfully processed chunks metadata to JSON file for tracking
+    try:
+        logger.info(f"[Stage 01, Part 10.1.1] Saving processed chunks metadata to: {chunks_dir}")
+        chunks_dir.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Read existing data first
+        existing_data = []
+        if os.path.exists(chunks_dir):
+            with open(chunks_dir, "r", encoding="utf-8") as f:
+                for line in f:
+                    try:
+                        existing_data.append(json.loads(line.strip()))
+                    except json.JSONDecodeError:
+                        continue
+        
+        # Append new chunks
+        with open(chunks_dir, "a", encoding="utf-8") as f:
+            for chunk in chunks:
+                chunk_data = {
+                    "content": chunk.page_content, 
+                    "metadata": chunk.metadata
+                }
+                f.write(json.dumps(chunk_data) + "\n")
+        
+        logger.info(f"[Stage 01, Part 10.1.2] Saved {len(chunks)} processed chunks to metadata file")
+        
+    except Exception as e:
+        logger.error(f"[Stage 01, Part 10.1] Error saving processed chunks metadata: {e}")
+        logger.debug(traceback.format_exc())
+    
+    # Load existing chunks metadata from JSON file to track what's already processed
+    try:
+        if not os.path.exists(chunks_dir):
+            logger.info(f"[Stage 01, Part 10.2.1] No existing chunks file found at {chunks_dir}")
+            return set()
+        
+        existing_ids = set()
+        with open(chunks_dir, "r", encoding="utf-8") as f:
+            for line in f:
+                try:
+                    chunk_data = json.loads(line.strip())
+                    chunk_id = chunk_data.get("metadata", {}).get("chunk_id")
+                    if chunk_id:
+                        existing_ids.add(chunk_id)
+                except json.JSONDecodeError:
+                    continue
+        
+        logger.info(f"[Stage 01, Part 10.2.2] Loaded {len(existing_ids)} existing chunk IDs")
+        return existing_ids
+    except Exception as e:
+        logger.error(f"[Stage 01, Part 10.2] Error loading existing chunks metadata: {e}")
+        logger.debug(traceback.format_exc())
+        return set()
 
 def save_to_faiss_db(chunks: list[Document], faiss_db_dir, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger):
     try:
@@ -316,12 +362,16 @@ def save_to_faiss_db(chunks: list[Document], faiss_db_dir, base_data_path, chunk
             logger.info(f"[Stage 01, Part 09.1] Saving FAISS database to: {faiss_db_dir}...")
             db.save_local(folder_path=str(faiss_db_dir))
             logger.info("[Stage 01, Part 09.2] FAISS database saved successfully")
+            
+            # Step 9: Only after successful FAISS save, update the metadata tracking file
+            logger.info("[Stage 01, Part 10] Updating processed chunks metadata file...")
+            save_processed_chunks_metadata(filtered_chunks, chunks_dir, logger)
         else:
-            logger.warning("[Stage 01, Part 09] No FAISS database to save")
+            logger.warning("[Stage 01, Part 10] No FAISS database to save")
 
-        logger.info("[Stage 01, Part 09] Chunks saved to FAISS DB successfully")
+        logger.info("[Stage 01, Part 10] Chunks saved to FAISS DB successfully")
     except Exception as e:
-        logger.error(f"[Stage 01, Part 09] Error saving to FAISS DB: {e}")
+        logger.error(f"[Stage 01, Part 10] Error saving to FAISS DB: {e}")
         logger.debug(traceback.format_exc())
         return []
 

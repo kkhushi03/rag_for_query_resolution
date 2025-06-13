@@ -1,4 +1,4 @@
-import os, json, shutil, gc, traceback
+import os, shutil, gc, traceback
 from tqdm import tqdm
 from pathlib import Path
 from utils.config import CONFIG
@@ -15,9 +15,6 @@ from langchain_chroma import Chroma
 LOG_PATH = Path(CONFIG["LOG_PATH"])
 DATA_PATH = Path(CONFIG["DATA_PATH"])
 GROUPED_DIRS = CONFIG["GROUPED_DIRS"]
-
-CHUNKS_OUT_PATH = Path(CONFIG["CHUNKS_OUT_PATH"])
-EMBEDDINGS_OUT_PATH = Path(CONFIG["EMBEDDINGS_OUT_PATH"])
 CHROMA_DB_PATH = CONFIG["CHROMA_DB_PATH"]
 
 CHUNK_SIZE = CONFIG["CHUNK_SIZE"]
@@ -147,7 +144,7 @@ def split_docs(docs: List[Document], chunk_size: int, chunk_overlap: int, logger
         logger.debug(traceback.format_exc())
         return []
 
-def calc_chunk_ids(chunks, base_data_path, chunks_dir, logger):
+def calc_chunk_ids(chunks, base_data_path, logger):
     try:
         # Page Source : Page Number : Chunk Index
         last_page_id = None
@@ -178,15 +175,6 @@ def calc_chunk_ids(chunks, base_data_path, chunks_dir, logger):
             chunk.metadata["chunk_id"] = chunk_id
         
         logger.info("[Stage 01, Part 07.2] Chunk IDs calculated successfully.")
-        
-        logger.info(f"[Stage 01, Part 07.3] Saving these calculated Chunk IDs to a JSON file: {chunks_dir}.....")
-        chunks_dir.parent.mkdir(parents=True, exist_ok=True)
-        with open(chunks_dir, "w", encoding="utf-8") as f:
-            for chunk in chunks:
-                f.write(json.dumps({"content": chunk.page_content, "metadata": chunk.metadata}) + "\n")
-                logger.debug(f"[Stage 01, Part 07.3] Serialized chunk: {chunk}")
-        
-        logger.info(f"[Stage 01, Part 07.4] Saved these calculated Chunk IDs to a JSON file: {chunks_dir} successfully.")
         return chunks
     except Exception as e:
         logger.error(f"[Stage 01, Part 07] Error calculating chunk IDs: {e}")
@@ -195,7 +183,6 @@ def calc_chunk_ids(chunks, base_data_path, chunks_dir, logger):
 
 def filter_chunks(chunks: List[Document], lower_limit: int, upper_limit: int, logger) -> List[Document]:
     logger.info("[Stage 01, Part 08.4.1] Applying custom (token-based) filtering on chunks before ingestion...")
-    
     try:
         filtered = []
         for chunk in chunks:
@@ -229,7 +216,7 @@ def process_in_batches(documents, ingest_batch_size: int, ingest_fn, logger):
             logger.error(f"[Stage 01, Part 09] Failed to ingest batch {i // ingest_batch_size}: {e}")
             logger.debug(traceback.format_exc())
 
-def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger):
+def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, lower_limit, upper_limit, ingest_batch_size, logger):
     try:
         logger.info("[Stage 01, Part 06] Saving chunks to Chroma DB.....")
         
@@ -242,7 +229,7 @@ def save_to_chroma_db(chunks: list[Document], chroma_db_dir, base_data_path, chu
         
         # calculate "page:chunk" IDs
         # Step 1: Assign chunk IDs
-        chunks_with_ids = calc_chunk_ids(chunks, base_data_path, chunks_dir, logger)
+        chunks_with_ids = calc_chunk_ids(chunks, base_data_path, logger)
         logger.info(f"[Stage 01, Part 08.1] Calculated chunk IDs for total {len(chunks_with_ids)} chunks")
         
         # add/update the docs
@@ -301,15 +288,7 @@ def clear_database(chroma_db_dir):
     if os.path.exists(chroma_db_dir):
         shutil.rmtree(chroma_db_dir)
 
-def clear_chunks(chunks_dir):
-    chunks_path = Path(chunks_dir)
-    if chunks_path.exists():
-        if chunks_path.is_file():
-            chunks_path.unlink()
-        elif chunks_path.is_dir():
-            shutil.rmtree(chunks_path)
-
-def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, base_data_path=DATA_PATH, chunks_dir=CHUNKS_OUT_PATH, grouped_dirs=GROUPED_DIRS, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, ingest_batch_size=INGEST_BATCH_SIZE):
+def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, base_data_path=DATA_PATH, grouped_dirs=GROUPED_DIRS, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, ingest_batch_size=INGEST_BATCH_SIZE):
     try:
         logger = setup_logger("populate_db_logger", LOG_FILE)
         logger.info(" ")
@@ -320,10 +299,6 @@ def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, base_data_path=DA
             logger.info("[Stage 01, Part 00.1] (RESET DB) Clearing the database...")
             clear_database(chroma_db_dir)
             logger.info("[Stage 01, Part 00.1] (RESET DB) Database cleared successfully.")
-            
-            logger.info("[Stage 01, Part 00.2] (RESET DB) Clearing the chunks file...")
-            clear_chunks(chunks_dir)
-            logger.info("[Stage 01, Part 00.2] (RESET DB) Chunks file cleared successfully.")
         
         # create (or update) the db
         # docs = load_docs(base_data_path, logger)
@@ -344,7 +319,7 @@ def run_populate_db(reset=False, chroma_db_dir=CHROMA_DB_PATH, base_data_path=DA
         # logger.info(f"First chunk: {chunks[0]}")
         
         # logger.info(f" [] Loaded {len(flat_docs)} docs, created {len(chunks)} chunks")
-        save_to_chroma_db(chunks, chroma_db_dir, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger)
+        save_to_chroma_db(chunks, chroma_db_dir, base_data_path, lower_limit, upper_limit, ingest_batch_size, logger)
         
         # Manual memory cleanup
         del docs, flat_docs, chunks

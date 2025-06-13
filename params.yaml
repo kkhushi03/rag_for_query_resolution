@@ -12,10 +12,9 @@ SOURCE_DIRS: ["arxiv", "pdfs", "core"]
 DATA_PATH: "artifacts/data/grouped_data/"
 GROUPED_DIRS: ["group_1"]
 
-CHUNKS_OUT_PATH: "artifacts/model_inferences/chroma/chunks/chunks.jsonl"
 CHROMA_DB_PATH: "chromadb"
 
-CHUNKS_OUT_PATH_FAISS: "artifacts/model_inferences/faiss/chunks/chunks.jsonl"
+CHUNKS_OUT_PATH_FAISS: "artifacts/model_inferences/faiss/chunks.jsonl"
 FAISS_DB_PATH: "faiss"
 
 QUERY_TEXT: "What depths were used for monitoring soil suction using the miniature tensiometer at the Boissy-le-Châtel site?"
