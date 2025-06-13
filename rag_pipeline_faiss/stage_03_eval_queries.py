@@ -1,17 +1,18 @@
 import os, json, traceback, time
 from datetime import datetime
+from pathlib import Path
 from typing import List, Dict, Any
 from utils.config import CONFIG
 from utils.logger import setup_logger
-from rag_pipeline_chroma.stage_02_query_data import query_rag
+from rag_pipeline_faiss.stage_02_query_data import query_rag
 from utils.evaluation.get_retrieval_eval_metrics import calc_all_retrieval_scores
 from utils.evaluation.get_generation_eval_metrics import calc_all_generation_scores
 from utils.evaluation.save_n_update_results import append_new_results_to_csv
 
 
 # configurations
-LOG_PATH = CONFIG["LOG_PATH"]
-CHROMA_DB_PATH = CONFIG["CHROMA_DB_PATH"]
+LOG_PATH = Path(CONFIG["LOG_PATH"])
+FAISS_DB_PATH = CONFIG["FAISS_DB_PATH"]
 EVALUATION_DATA_PATHS = CONFIG.get("EVALUATION_DATA_PATHS", [])
 RESULTS_CSV_PATH = CONFIG.get("RESULTS_CSV_PATH", "evaluation_results.csv")
 K = CONFIG["K"]
@@ -39,12 +40,12 @@ def load_evaluation_data(file_path: str, logger) -> List[Dict]:
         logger.debug(traceback.format_exc())
         return []
 
-def evaluate_single_query(question: str, ground_truth: str, relevant_doc_ids: List[str], chroma_db_dir, at_k: int, at_r: int, max_n: int, logger) -> Dict[str, Any]:
+def evaluate_single_query(question: str, ground_truth: str, relevant_doc_ids: List[str], faiss_db_dir, at_k: int, at_r: int, max_n: int, logger) -> Dict[str, Any]:
     start_time = time.time()
 
     try:
         logger.info(f"[Stage 03, Part 02] Processing question: {question}")
-        rag_result = query_rag(query_text=question, chroma_db_dir=chroma_db_dir, at_k=at_k, at_r=at_r, logger=logger)
+        rag_result = query_rag(query_text=question, faiss_db_dir=faiss_db_dir, at_k=at_k, at_r=at_r, logger=logger)
         
         predicted_answer = rag_result.get('llms_response', '')
         context = rag_result.get('context', '')
@@ -130,7 +131,7 @@ def evaluate_single_query(question: str, ground_truth: str, relevant_doc_ids: Li
         logger.info(json.dumps(result))
 
 
-def run_evaluation(eval_dir=EVALUATION_DATA_PATHS, result_dir=RESULTS_CSV_PATH, chroma_db_dir=CHROMA_DB_PATH, at_k=K, at_r=R, max_n=MAX_N, embedding_model=EMBEDDING_MODEL, local_llm=LOCAL_LLM):
+def run_evaluation(eval_dir=EVALUATION_DATA_PATHS, result_dir=RESULTS_CSV_PATH, faiss_db_dir=FAISS_DB_PATH, at_k=K, at_r=R, max_n=MAX_N, embedding_model=EMBEDDING_MODEL, local_llm=LOCAL_LLM):
     logger = setup_logger("evaluation_logger", LOG_FILE)
     logger.info(" ")
     logger.info("++++++++[Pipeline 3] Starting RAG Evaluation.....")
@@ -177,7 +178,7 @@ def run_evaluation(eval_dir=EVALUATION_DATA_PATHS, result_dir=RESULTS_CSV_PATH, 
             question=item['question'],
             ground_truth=item['ground_truth'],
             relevant_doc_ids=relevant_doc_ids,
-            chroma_db_dir=chroma_db_dir,
+            faiss_db_dir=faiss_db_dir,
             at_k=at_k,
             at_r=at_r,
             max_n=max_n,

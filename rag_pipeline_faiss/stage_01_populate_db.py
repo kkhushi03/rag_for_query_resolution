@@ -304,7 +304,7 @@ def save_to_faiss_db(chunks: list[Document], faiss_db_dir, base_data_path, chunk
         faiss_db_dir.mkdir(parents=True, exist_ok=True)
         
         index_path = faiss_db_dir / "index.faiss"
-        metadata_path = faiss_db_dir / "metadata.pkl"
+        metadata_path = faiss_db_dir / "index.pkl"
         
         if index_path.exists() and metadata_path.exists():
             # Load existing FAISS database
