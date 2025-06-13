@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import List, Dict, Any
 from utils.config import CONFIG
 from utils.logger import setup_logger
-from rag_pipeline.stage_02_query_data import query_rag
+from rag_pipeline_chroma.stage_02_query_data import query_rag
 from utils.evaluation.get_retrieval_eval_metrics import calc_all_retrieval_scores
 from utils.evaluation.get_generation_eval_metrics import calc_all_generation_scores
 from utils.evaluation.save_n_update_results import append_new_results_to_csv
