@@ -71,7 +71,16 @@ def query_rag(query_text: str, logger):
         generator = prompt_generate_answer | llm_gen_func | StrOutputParser()
         response = generator.invoke({"question": query_text, "context": context_text})
 
-        sources = [doc.metadata.get("chunk_id") for doc, _, _ in graded_results]
+        def format_source(metadata):
+            try:
+                raw_path = metadata.get("source", "")
+                filename = os.path.basename(raw_path)
+                chunk_number = metadata.get("chunk_id", "").split("_chunk_")[-1]
+                return f"{filename} (chunk {chunk_number})"
+            except:
+                return metadata.get("chunk_id", "unknown source")
+
+        sources = [format_source(doc.metadata) for doc, _, _ in graded_results]
 
         return {
             "llms_response": response,
