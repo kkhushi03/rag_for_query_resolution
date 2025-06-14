@@ -15,5 +15,16 @@ if __name__ == "__main__":
 
     query = CONFIG["QUERY_TEXT"]
     print(f"[MAIN] Running query: {query}")
-    run_query_rag(query)
+
+    result = run_query_rag(query)
+
+    if result:
+        print("\n=== Final Answer ===\n")
+        print(result.get("llms_response", "[No response]"))
+        print("\n=== Sources ===")
+        for src in result.get("sources", []):
+            print("-", src)
+    else:
+        print("[MAIN] No answer generated.")
+
     print("[MAIN] Pipeline execution complete.")
