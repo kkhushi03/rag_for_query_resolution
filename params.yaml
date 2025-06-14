@@ -11,7 +11,10 @@ SOURCE_DATA_PATH: "artifacts/data/collected_data/"
 SOURCE_DIRS: ["arxiv", "pdfs", "core"]
 DATA_PATH: "artifacts/data/grouped_data/"
 GROUPED_DIRS: ["group_3"]
-CHROMA_DB_PATH: "chromadb"
+
+# 🔄 TF-IDF specific database paths
+TFIDF_DB_PATH: "artifacts/vectorstores/tfidf_index.pkl"
+TFIDF_META_PATH: "artifacts/vectorstores/tfidf_metadata.json"
 
 QUERY_TEXT: "What depths were used for monitoring soil suction using the miniature tensiometer at the Boissy-le-Châtel site?"
 EVALUATION_DATA_PATHS: "artifacts/data/evaluation_data/questions_1.json"
@@ -28,6 +31,5 @@ N: 3
 
 ENCODING_MODEL: "cl100k_base"
 EMBEDDING_MODEL: "BAAI/bge-small-en"
-# EMBEDDING_MODEL: "intfloat/multilingual-e5-large-instruct"
 RE_RANK_MODEL: "cross-encoder/ms-marco-MiniLM-L-6-v2"
 LOCAL_LLM: "qwen3:0.6b"
