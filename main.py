@@ -68,18 +68,18 @@ def main():
             logger.debug(traceback.format_exc())
             return
         
-        try:
-            logger.info(" ")
-            logger.info("----------STARTING [STAGE 02] QUERY RAG----------")
-            # run_query_rag(args.query_text)
-            run_query_rag(query=QUERY_TEXT)
-            # logger.info("Already Done. Skipping...")
-            logger.info("----------FINISHED [STAGE 02] QUERY RAG----------")
-            logger.info(" ")
-        except Exception as e:
-            logger.error(f"ERROR RUNNING [STAGE 02] QUERY RAG: {e}")
-            logger.debug(traceback.format_exc())
-            return
+        # try:
+        #     logger.info(" ")
+        #     logger.info("----------STARTING [STAGE 02] QUERY RAG----------")
+        #     # run_query_rag(args.query_text)
+        #     run_query_rag(query=QUERY_TEXT)
+        #     # logger.info("Already Done. Skipping...")
+        #     logger.info("----------FINISHED [STAGE 02] QUERY RAG----------")
+        #     logger.info(" ")
+        # except Exception as e:
+        #     logger.error(f"ERROR RUNNING [STAGE 02] QUERY RAG: {e}")
+        #     logger.debug(traceback.format_exc())
+        #     return
         
         logger.info("////--//--//----FINISHED [PIPELINE 02] RAG PIPELINE----//--//--////")
         logger.info(" ")
