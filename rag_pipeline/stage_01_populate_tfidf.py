@@ -8,7 +8,7 @@ from utils.config import CONFIG
 from utils.logger import setup_logger
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from utils.ingest_utils import load_documents_from_dirs
-
+from langchain_core.documents import Document
 # Config values
 DATA_DIR = CONFIG["DATA_PATH"]
 GROUPED_DIRS = CONFIG["GROUPED_DIRS"]
