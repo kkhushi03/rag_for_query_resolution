@@ -5,7 +5,7 @@ from utils.logger import setup_logger
 from utils.config import CONFIG
 # from data_collection_pipeline.data_collection_main import run_data_collection_pipeline
 # from rag_pipeline.stage_00_clean_data_paths import run_clean_data_paths
-from rag_pipeline.stage_01_populate_db import run_populate_db
+# from rag_pipeline.stage_01_populate_db import run_populate_db
 from rag_pipeline.stage_02_query_data import run_query_rag
 
 # configurations
@@ -23,7 +23,7 @@ def main():
     
     # Create CLI.
     parser = argparse.ArgumentParser(description="MAIN WORKFLOW")
-    parser.add_argument("--reset", action="store_true", help="Reset Chroma DB before population")
+    # parser.add_argument("--reset", action="store_true", help="Reset Chroma DB before population")
     # parser.add_argument("query_text", type=str, help="The query text.")
     args = parser.parse_args()
     
@@ -56,30 +56,30 @@ def main():
         #     logger.debug(traceback.format_exc())
         #     return
         
-        try:
-            logger.info(" ")
-            logger.info("----------STARTING [STAGE 01] POPULATE DB----------")
-            run_populate_db(args.reset)
-            # logger.info("Already Done. Skipping...")
-            logger.info("----------FINISHED [STAGE 01] POPULATE DB----------")
-            logger.info(" ")
-        except Exception as e:
-            logger.error(f"ERROR RUNNING [STAGE 01] POPULATE DB: {e}")
-            logger.debug(traceback.format_exc())
-            return
-        
         # try:
         #     logger.info(" ")
-        #     logger.info("----------STARTING [STAGE 02] QUERY RAG----------")
-        #     # run_query_rag(args.query_text)
-        #     run_query_rag(query=QUERY_TEXT)
+        #     logger.info("----------STARTING [STAGE 01] POPULATE DB----------")
+        #     run_populate_db(args.reset)
         #     # logger.info("Already Done. Skipping...")
-        #     logger.info("----------FINISHED [STAGE 02] QUERY RAG----------")
+        #     logger.info("----------FINISHED [STAGE 01] POPULATE DB----------")
         #     logger.info(" ")
         # except Exception as e:
-        #     logger.error(f"ERROR RUNNING [STAGE 02] QUERY RAG: {e}")
+        #     logger.error(f"ERROR RUNNING [STAGE 01] POPULATE DB: {e}")
         #     logger.debug(traceback.format_exc())
         #     return
+        
+        try:
+            logger.info(" ")
+            logger.info("----------STARTING [STAGE 02] QUERY RAG----------")
+            # run_query_rag(args.query_text)
+            run_query_rag(query=QUERY_TEXT)
+            # logger.info("Already Done. Skipping...")
+            logger.info("----------FINISHED [STAGE 02] QUERY RAG----------")
+            logger.info(" ")
+        except Exception as e:
+            logger.error(f"ERROR RUNNING [STAGE 02] QUERY RAG: {e}")
+            logger.debug(traceback.format_exc())
+            return
         
         logger.info("////--//--//----FINISHED [PIPELINE 02] RAG PIPELINE----//--//--////")
         logger.info(" ")
