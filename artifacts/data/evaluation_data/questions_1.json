@@ -1,16 +1,23 @@
 [
     {
     "question": "Why is there a push to replace the traditional C2F4H2-based gas mixture in RPC detectors with ecological alternatives?",
-    "ground truth": "Traditional C2F4H2-based gas mixtures used in Resistive Plate Chambers (RPCs) have a very high Global Warming Potential (GWP), prompting a push to find ecological alternatives. Although closed loop systems reduce gas emissions, they are expensive and prone to leaks. Hence, ecological gases like HFO-1234ze (C3F4H2) with significantly lower GWP are being explored to achieve sustainability without compromising detector performance.",
-    "relevent doc ids": "group_1/0001.2308v1.pdf:0:0",
+    "ground truth": "The ecological gas (HFO-1234ze) has a lower Global Warming Potential (GWP) than traditional C2F4H2-based mixtures, making it a better alternative. Adding CO2 shifts the operating voltage to a C3H2F4-based mixture, which aligns with environmental goals. The ecological gas maintains performance comparable to traditional mixtures without compromising efficiency.",
+    "relevent doc ids": "- 1806.00649v1.pdf (chunk 2) | Group: 1,
+                        - 1806.00649v1.pdf (chunk 1) | Group: 1,
+                        - 1806.00649v1.pdf (chunk 2) | Group: 1,
+                        - 1806.00649v1.pdf (chunk 3) | Group: 1,
+                        - 2001.10446v1.pdf (chunk 4) | Group: 5",
     "difficulty": "medium",
     "correctness": true
     },
 
     {
     "question": "What is the main advantage of YieldNet over traditional single-crop yield prediction models using remote sensing data?",
-    "ground truth": "YieldNet introduces a novel convolutional neural network framework that enables the simultaneous prediction of multiple crop yields (corn and soybean) using transfer learning. Unlike traditional models that require separate models for each crop, YieldNet shares the backbone feature extractor between crops and incorporates a new loss function for multi-target regression. This approach improves prediction accuracy and reduces computational costs by eliminating the need for training multiple models.",
-    "relevent doc ids": "group_2/0001.2308v1.pdf:0:0",
+    "ground truth": "The main advantage of YieldNet over traditional models is its ability to combine corn and soybean yield predictions, outperforming individual models. Additionally, its use of transfer learning between crops and XGBoost's efficiency in feature extraction further enhances accuracy. Lastly, the model's robustness and alignment with expert knowledge in yield prediction contribute to its effectiveness.",
+    "relevent doc ids": "- 2012.03129v3.pdf (chunk 1) | Group: 2,
+                        - 2012.03129v3.pdf (chunk 1) | Group: 2,
+                        - 2208.12633v1.pdf (chunk 0) | Group: 1,
+                        - 2208.12633v1.pdf (chunk 0) | Group: 2",
     "difficulty": "medium",
     "correctness": true
     },
