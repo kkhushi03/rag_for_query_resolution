@@ -164,6 +164,8 @@ cython_debug/
 artifacts/data/collected_data/
 artifacts/data/grouped_data/
 artifacts/data.zip
+artifacts/vectorstores/
+
 
 chromadb/
 chromadb/chroma.sqlite3
