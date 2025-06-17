@@ -20,7 +20,7 @@ def main():
     
     # Create CLI.
     parser = argparse.ArgumentParser(description="MAIN WORKFLOW")
-    # parser.add_argument("--reset", action="store_true", help="Reset FAISS DB before population")
+    parser.add_argument("--reset", action="store_true", help="Reset FAISS DB before population")
     # parser.add_argument("query_text", type=str, help="The query text.")
     args = parser.parse_args()
     
@@ -31,8 +31,8 @@ def main():
         try:
             logger.info(" ")
             logger.info("----------STARTING [STAGE 01] POPULATE DB----------")
-            # run_populate_db(args.reset)
-            logger.info("Already Done. Skipping...")
+            run_populate_db(args.reset)
+            # logger.info("Already Done. Skipping...")
             logger.info("----------FINISHED [STAGE 01] POPULATE DB----------")
             logger.info(" ")
         except Exception as e:
@@ -40,30 +40,30 @@ def main():
             logger.debug(traceback.format_exc())
             return
         
-        try:
-            logger.info(" ")
-            logger.info("----------STARTING [STAGE 02] QUERY RAG----------")
-            # run_query_rag(args.query_text)
-            # run_query_rag(query=QUERY_TEXT)
-            logger.info("Already Done. Skipping...")
-            logger.info("----------FINISHED [STAGE 02] QUERY RAG----------")
-            logger.info(" ")
-        except Exception as e:
-            logger.error(f"ERROR RUNNING [STAGE 02] QUERY RAG: {e}")
-            logger.debug(traceback.format_exc())
-            return
+        # try:
+        #     logger.info(" ")
+        #     logger.info("----------STARTING [STAGE 02] QUERY RAG----------")
+        #     # run_query_rag(args.query_text)
+        #     # run_query_rag(query=QUERY_TEXT)
+        #     logger.info("Already Done. Skipping...")
+        #     logger.info("----------FINISHED [STAGE 02] QUERY RAG----------")
+        #     logger.info(" ")
+        # except Exception as e:
+        #     logger.error(f"ERROR RUNNING [STAGE 02] QUERY RAG: {e}")
+        #     logger.debug(traceback.format_exc())
+        #     return
         
-        try:
-            logger.info(" ")
-            logger.info("----------STARTING [STAGE 03] EVALUATE QUERIES----------")
-            run_evaluation()
-            # logger.info("Already Done. Skipping...")
-            logger.info("----------FINISHED [STAGE 03] EVALUATE QUERIES----------")
-            logger.info(" ")
-        except Exception as e:
-            logger.error(f"ERROR RUNNING [STAGE 03] EVALUATE QUERIES: {e}")
-            logger.debug(traceback.format_exc())
-            return
+        # try:
+        #     logger.info(" ")
+        #     logger.info("----------STARTING [STAGE 03] EVALUATE QUERIES----------")
+        #     run_evaluation()
+        #     # logger.info("Already Done. Skipping...")
+        #     logger.info("----------FINISHED [STAGE 03] EVALUATE QUERIES----------")
+        #     logger.info(" ")
+        # except Exception as e:
+        #     logger.error(f"ERROR RUNNING [STAGE 03] EVALUATE QUERIES: {e}")
+        #     logger.debug(traceback.format_exc())
+        #     return
         
         logger.info("////--//--//----FINISHED [PIPELINE 02] RAG PIPELINE----//--//--////")
         logger.info(" ")
