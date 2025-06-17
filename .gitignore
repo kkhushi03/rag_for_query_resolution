@@ -169,3 +169,6 @@ artifacts/vectorstores/tfidf_metadata.json
 
 chromadb/
 chromadb/chroma.sqlite3
+
+VECTOR_STORES/
+VECTOR_STORES/tfidf/
