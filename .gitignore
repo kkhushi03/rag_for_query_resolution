@@ -164,8 +164,8 @@ cython_debug/
 artifacts/data/collected_data/
 artifacts/data/grouped_data/
 artifacts/data.zip
-artifacts/vectorstores/
-
+artifacts/vectorstores/tfidf_index.pkl
+artifacts/vectorstores/tfidf_metadata.json
 
 chromadb/
 chromadb/chroma.sqlite3
