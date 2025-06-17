@@ -21,7 +21,7 @@ tiktoken
 huggingface_hub[hf_xet]
 numpy
 pandas
-# sklearn
+scikit-learn
 # matplotlib
 # seaborn
 # torch

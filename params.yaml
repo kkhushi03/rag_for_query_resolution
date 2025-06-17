@@ -10,12 +10,17 @@ LOG_PATH: "logs"
 SOURCE_DATA_PATH: "artifacts/data/collected_data/"
 SOURCE_DIRS: ["arxiv", "pdfs", "core"]
 DATA_PATH: "artifacts/data/grouped_data/"
-GROUPED_DIRS: ["group_6", "group_7"]
+GROUPED_DIRS: ["group_1", "group_2", "group_3", "group_4", "group_5", "group_6", "group_7", "group_8", "group_9", "group_10", "group_11", "group_12", "group_13"]
 
-CHROMA_DB_PATH: "chromadb"
+CHROMA_DB_PATH: "VECTOR_STORES/chromadb"
 
-CHUNKS_OUT_PATH_FAISS: "artifacts/model_inferences/faiss/chunks.jsonl"
-FAISS_DB_PATH: "faiss"
+CHUNKS_OUT_PATH_FAISS: "VECTOR_STORES/model_inferences/faiss/chunks.jsonl"
+FAISS_DB_PATH: "VECTOR_STORES/faiss"
+
+CHUNKS_OUT_PATH_TFIDF: "VECTOR_STORES/model_inferences/tfidf/chunks.jsonl"
+TFIDF_DB_DIR: "VECTOR_STORES/tfidf"
+TFIDF_DB_PATH: "VECTOR_STORES/tfidf/tfidf_index.pkl"
+TFIDF_META_PATH: "VECTOR_STORES/tfidf/tfidf_metadata.json"
 
 QUERY_TEXT: "What depths were used for monitoring soil suction using the miniature tensiometer at the Boissy-le-Châtel site?"
 EVALUATION_DATA_PATHS: "artifacts/data/evaluation_data/questions.json"
