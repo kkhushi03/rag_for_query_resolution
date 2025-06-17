@@ -37,10 +37,15 @@ def run_populate_db():
     for doc in documents:
         chunks = splitter.split_text(doc.page_content)
         for idx, chunk in enumerate(chunks):
+            raw_path = doc.metadata.get("source", "")
+            group_number = Path(raw_path).parts[-2]
+
             metadata = {
-                "source": doc.metadata.get("source"),
-                "chunk_id": f"{doc.metadata.get('source', 'doc')}_chunk_{idx}"
+                "source": raw_path,
+                "chunk_id": f"{raw_path}_chunk_{idx}",
+                "group_number": group_number
             }
+
             all_docs.append(Document(page_content=chunk, metadata=metadata))
 
     logger.info(f"Split into {len(all_docs)} chunks")

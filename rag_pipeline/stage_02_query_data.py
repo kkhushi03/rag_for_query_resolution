@@ -1,5 +1,6 @@
 # rag_pipeline/stage_02_query_data.py
 import os
+import re
 import json
 import pickle
 import traceback
@@ -42,12 +43,12 @@ def query_rag(query_text: str, logger):
 
         retrieved_docs = []
         for i in top_k_idx:
-            doc = Document(page_content=texts[i], metadata=metadata[i])
+            doc = texts[i]
             retrieved_docs.append((doc, sims[i]))
 
         logger.info(f"Retrieved top-{K} documents")
 
-        # Grading directly on Document objects
+        # Grading documents
         graded_results = []
         grader = prompt_retrieval_grader | llm_func | JsonOutputParser()
 
@@ -64,12 +65,15 @@ def query_rag(query_text: str, logger):
 
         if not graded_results:
             logger.warning("No documents passed grading")
+            print(f"\n=== Question ===\n{query_text}")
+            print("\n=== Answer ===\nNo relevant documents found to answer the question.")
             return {}
 
         # Generate answer
         context_text = "\n\n---\n\n".join([doc.page_content for doc, _, _ in graded_results])
         generator = prompt_generate_answer | llm_gen_func | StrOutputParser()
-        response = generator.invoke({"question": query_text, "context": context_text})
+        raw_response = generator.invoke({"question": query_text, "context": context_text})
+        response = re.sub(r"<think>.*?</think>", "", raw_response, flags=re.DOTALL).strip()
 
         def format_source(metadata):
             try:
@@ -82,10 +86,20 @@ def query_rag(query_text: str, logger):
 
         sources = [format_source(doc.metadata) for doc, _, _ in graded_results]
 
+        print(f"\n=== Question ===\n{query_text}")
+        print(f"\n=== Answer ===\n{response.strip()}")
+        print("\n=== Sources ===")
+        for src in sources:
+            print(f"- {src}")
+
+        group_numbers = list({doc.metadata.get("group_number", "unknown group") for doc, _, _ in graded_results})
+
         return {
+            "question": query_text,
             "llms_response": response,
             "context": context_text,
             "sources": sources,
+            "group_numbers": group_numbers,
             "graded_results": graded_results
         }
 
