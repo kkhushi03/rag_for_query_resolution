@@ -9,7 +9,6 @@ from typing import List
 from langchain.schema import Document
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 # configurations
@@ -31,7 +30,7 @@ INGEST_BATCH_SIZE = CONFIG["INGEST_BATCH_SIZE"]
 # setup logging
 LOG_DIR = os.path.join(os.getcwd(), LOG_PATH)
 os.makedirs(LOG_DIR, exist_ok=True)  # Create the logs directory if it doesn't exist
-LOG_FILE = os.path.join(LOG_DIR, "stage_01_populate_tfidf.log")
+LOG_FILE = os.path.join(LOG_DIR, "stage_01_populate_db.log")
 
 
 def load_docs(base_data_path: Path, grouped_dirs: List[str], logger) -> List[Document]:
@@ -335,7 +334,7 @@ def save_to_tfidf_db(chunks: list[Document], tfidf_db_path, tfidf_metadata_path,
         try:
             os.makedirs(os.path.dirname(tfidf_db_path), exist_ok=True)
             with open(tfidf_db_path, "wb") as f:
-                pickle.dump((tfidf, vectors, metadatas), f)
+                pickle.dump((tfidf, vectors, texts), f)
 
             with open(tfidf_metadata_path, "w", encoding="utf-8") as f:
                 json.dump(metadatas, f, indent=2)
@@ -374,7 +373,7 @@ def clear_chunks(chunks_dir):
 
 def run_populate_db(reset=False, tfidf_db_dir=TFIDF_DB_DIR, tfidf_db_path=TFIDF_DB_PATH, tfidf_metadata_path=TFIDF_META_PATH, base_data_path=DATA_PATH, chunks_dir=CHUNKS_OUT_PATH_TFIDF, grouped_dirs=GROUPED_DIRS, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, ingest_batch_size=INGEST_BATCH_SIZE):
     try:
-        logger = setup_logger("tfidf_db_logger", LOG_FILE)
+        logger = setup_logger("populate_db_logger", LOG_FILE)
         logger.info(" ")
         logger.info("--------++++++++Starting db population stage.....")
         
