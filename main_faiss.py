@@ -44,8 +44,8 @@ def main():
         #     logger.info(" ")
         #     logger.info("----------STARTING [STAGE 02] QUERY RAG----------")
         #     # run_query_rag(args.query_text)
-        #     # run_query_rag(query=QUERY_TEXT)
-        #     logger.info("Already Done. Skipping...")
+        #     run_query_rag(query=QUERY_TEXT)
+        #     # logger.info("Already Done. Skipping...")
         #     logger.info("----------FINISHED [STAGE 02] QUERY RAG----------")
         #     logger.info(" ")
         # except Exception as e:

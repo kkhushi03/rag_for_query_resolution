@@ -105,7 +105,7 @@ def split_docs(docs: List[Document], chunk_size: int, chunk_overlap: int, logger
         logger.debug(traceback.format_exc())
         return []
 
-def calc_chunk_ids(chunks, base_data_path, chunks_dir, logger):
+def calc_chunk_ids(chunks, base_data_path, logger):
     try:
         # Page Source : Page Number : Chunk Index
         last_page_id = None
@@ -263,7 +263,7 @@ def save_to_faiss_db(chunks: list[Document], faiss_db_dir, base_data_path, chunk
 
         # calculate "page:chunk" IDs
         # Step 1: Assign chunk IDs
-        chunks_with_ids = calc_chunk_ids(chunks, base_data_path, chunks_dir, logger)
+        chunks_with_ids = calc_chunk_ids(chunks, base_data_path, logger)
         logger.info(f"[Stage 01, Part 06.1] Calculated chunk IDs for total {len(chunks_with_ids)} chunks")
         
         # add/update the docs

@@ -11,7 +11,6 @@ from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 # configurations
 LOG_PATH = Path(CONFIG["LOG_PATH"])
 FAISS_DB_PATH = CONFIG["FAISS_DB_PATH"]
-EVALUATION_DATA_PATHS = Path(CONFIG["EVALUATION_DATA_PATHS"])
 
 BATCH_SIZE = CONFIG["BATCH_SIZE"]
 K = CONFIG["K"]
@@ -34,10 +33,10 @@ def query_rag(query_text: str, faiss_db_dir, at_k, at_r, logger):
                 embedding_func(),
                 allow_dangerous_deserialization=True
             )
-            logger.info(f"[Stage 02, Part 01.1] Loading existing FAISS DB from path: {faiss_db_dir}")
+            logger.info(f"[Stage 02, Part 01.1] Loading existing FAISS DB from path: {faiss_db_dir}.....")
             
             # query the db (search the db)
-            logger.info(f"[Stage 02, Part 01.2] Searching the db with text using similarity search: {query_text}")
+            logger.info(f"[Stage 02, Part 01.2] Searching the db with text using similarity search: {query_text}.....")
             results = db.similarity_search_with_score(query_text, k=at_k)
             logger.info(f"[Stage 02, Part 01.3] Retrieved {len(results)} Docs:")
             # logger.info(type(results))
@@ -142,7 +141,7 @@ def query_rag(query_text: str, faiss_db_dir, at_k, at_r, logger):
         }
 
     except Exception as e:
-        logger.error(f"Error in querying Chroma DB & grading: {e}")
+        logger.error(f"Error in querying FAISS DB & grading: {e}")
         logger.debug(traceback.format_exc())
         return {
             'llms_response': '',

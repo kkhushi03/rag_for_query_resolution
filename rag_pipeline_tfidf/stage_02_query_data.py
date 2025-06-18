@@ -1,16 +1,20 @@
-import os, traceback
+import os, traceback, re, json, pickle
 from pathlib import Path
 from utils.config import CONFIG
 from utils.logger import setup_logger
-from langchain_chroma import Chroma
-from utils.get_llm_func import embedding_func, rerank_results, llm_func, llm_gen_func
+from utils.get_llm_func import rerank_results, llm_func, llm_gen_func
+from sklearn.metrics.pairwise import cosine_similarity
 from utils.get_prompt_temp import prompt_retrieval_grader, prompt_generate_answer
+from langchain.schema import Document
 from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 
 
 # configurations
 LOG_PATH = Path(CONFIG["LOG_PATH"])
-CHROMA_DB_PATH = CONFIG["CHROMA_DB_PATH"]
+CHUNKS_OUT_PATH_TFIDF = Path(CONFIG["CHUNKS_OUT_PATH_TFIDF"])
+TFIDF_DB_DIR = Path(CONFIG["TFIDF_DB_DIR"])
+TFIDF_DB_PATH = Path(CONFIG["TFIDF_DB_PATH"])
+TFIDF_META_PATH = Path(CONFIG["TFIDF_META_PATH"])
 
 BATCH_SIZE = CONFIG["BATCH_SIZE"]
 K = CONFIG["K"]
@@ -22,30 +26,47 @@ os.makedirs(LOG_DIR, exist_ok=True)  # Create the logs directory if it doesn't e
 LOG_FILE = os.path.join(LOG_DIR, "stage_02_query_rag.log")
 
 
-def query_rag(query_text: str, chroma_db_dir, at_k, at_r, logger):
+def query_rag(query_text: str, tfidf_db_dir, tfidf_db_path, tfidf_metadata_path, at_k, at_r, logger):
     try:
         try:
-            logger.info("[Stage 02, Part 01] Querying Chroma DB.....")
+            logger.info("[Stage 02, Part 01] Querying TF-IDF DB.....")
             
-            # load the existing db (prep the db)
-            db = Chroma(
-                embedding_function=embedding_func(),
-                persist_directory=chroma_db_dir,
-            )
-            logger.info(f"[Stage 02, Part 01.1] Loading existing DB from path: {chroma_db_dir}")
+            # Load the existing TF-IDF db (prep the db)
+            if tfidf_db_dir.exists():
+                with open(tfidf_db_path, "rb") as f:
+                    tfidf, vectors, texts = pickle.load(f)
+
+                with open(tfidf_metadata_path, "r", encoding="utf-8") as f:
+                    metadata = json.load(f)
+                logger.info(f"[Stage 02, Part 01.1] Loading existing TF-IDF DB from path: {tfidf_db_dir}.....")
+            else:
+                logger.error(f"[Stage 02, Part 01.1] TF-IDF DB not found at path: {tfidf_db_dir}. Please populate the DB first.")
+                return []
             
+            # reconstruct document objects
+            documents = [
+                Document(page_content=texts[i], metadata=metadata[i])
+                for i in range(len(texts))
+            ]
+
             # query the db (search the db)
-            logger.info(f"[Stage 02, Part 01.2] Searching the db with text using similarity search: {query_text}")
-            results = db.similarity_search_with_score(query_text, k=at_k)
+            logger.info(f"[Stage 02, Part 01.2] Searching the db with text using similarity search: {query_text}.....")
+            def tfidf_similarity_search_with_score(query_text, tfidf, vectors, documents, at_k):
+                query_vector = tfidf.transform([query_text])
+                sims = cosine_similarity(query_vector, vectors).flatten()
+                top_k_idx = sims.argsort()[-at_k:][::-1]
+                return [(documents[i], sims[i]) for i in top_k_idx]
+
+            results = tfidf_similarity_search_with_score(query_text, tfidf, vectors, documents, at_k)
             logger.info(f"[Stage 02, Part 01.3] Retrieved {len(results)} Docs:")
-            # logger.info(type(results))
+
             for i, (doc, sim_score) in enumerate(results):
                 logger.info(f"  [{i}] Similarity Score: {sim_score:.4f}, Chunk ID: {doc.metadata.get('chunk_id')}")
             logger.debug(f"[Result A] Top {at_k} retrieved results: {results}")
             
-            logger.info("[Stage 02, Part 01] Querying Chroma DB completed successfully")
+            logger.info("[Stage 02, Part 01] Querying TF-IDF DB completed successfully")
         except Exception as e:
-            logger.error(f"[Stage 02, Part 01] Error in querying Chroma DB: {e}")
+            logger.error(f"[Stage 02, Part 01] Error in querying TF-IDF DB: {e}")
             logger.debug(traceback.format_exc())
             return []
         
@@ -140,7 +161,7 @@ def query_rag(query_text: str, chroma_db_dir, at_k, at_r, logger):
         }
 
     except Exception as e:
-        logger.error(f"Error in querying Chroma DB & grading: {e}")
+        logger.error(f"Error in querying TFIDF DB & grading: {e}")
         logger.debug(traceback.format_exc())
         return {
             'llms_response': '',
@@ -151,22 +172,17 @@ def query_rag(query_text: str, chroma_db_dir, at_k, at_r, logger):
             'graded_results': []
         }
 
-def run_query_rag(query: str, chroma_db_dir=CHROMA_DB_PATH, at_k=K, at_r=R) -> str:
+def run_query_rag(query: str, tfidf_db_dir=TFIDF_DB_DIR, tfidf_db_path=TFIDF_DB_PATH, tfidf_metadata_path=TFIDF_META_PATH, at_k=K, at_r=R) -> str:
     try:
         logger = setup_logger("query_rag_logger", LOG_FILE)
         logger.info(" ")
         logger.info("++++++++Starting Querying, Retrieval Grading, & Generation stage....")
         
-        results = query_rag(query, chroma_db_dir, at_k, at_r, logger)
+        results = query_rag(query, tfidf_db_dir, tfidf_db_path, tfidf_metadata_path, at_k, at_r, logger)
         if query is None:
             logger.error("[Stage 02] No query provided. Exiting.")
             return
         logger.debug(f"[Stage 02] Results: {results}")
-
-        # logger.info("Graded results:")
-        # for idx, (doc, sim_score, relevance) in enumerate(results["graded_results"]):
-        #     logger.info(f"[Doc {idx}] Re-ranking Score: {sim_score:.4f}, Relevant: {relevance}")
-        #     logger.debug(f"Content: {doc.page_content[:1000]}...")
         
         logger.info(" ")
         logger.info("#--#--FINAL RESULTS:--#--#")
