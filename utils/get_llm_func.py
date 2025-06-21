@@ -1,5 +1,5 @@
-from utils.config import CONFIG
 import tiktoken
+from utils.config import CONFIG
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from sentence_transformers import CrossEncoder
 from langchain_ollama import OllamaLLM
@@ -10,7 +10,7 @@ EMBEDDING_MODEL = CONFIG["EMBEDDING_MODEL"]
 RE_RANK_MODEL = CONFIG["RE_RANK_MODEL"]
 LOCAL_LLM = CONFIG["LOCAL_LLM"]
 
-cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+cross_encoder = CrossEncoder(RE_RANK_MODEL)
 
 
 def encoding_func():

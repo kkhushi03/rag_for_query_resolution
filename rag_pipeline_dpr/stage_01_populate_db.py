@@ -2,7 +2,7 @@ import os, shutil, gc, traceback
 from pathlib import Path
 from utils.config import CONFIG
 from utils.logger import setup_logger
-from utils.get_llm_func import embedding_func
+from utils.get_dpr_func import DPREmbeddings as embedding_func
 from utils.get_population_func import (
     load_docs, flatten_docs, split_docs, calc_chunk_ids, load_existing_chunks_metadata, filter_chunks, process_in_batches, save_processed_chunks_metadata
 )
@@ -15,8 +15,8 @@ LOG_PATH = Path(CONFIG["LOG_PATH"])
 DATA_PATH = Path(CONFIG["DATA_PATH"])
 GROUPED_DIRS = CONFIG["GROUPED_DIRS"]
 
-CHUNKS_OUT_PATH_FAISS = Path(CONFIG["CHUNKS_OUT_PATH_FAISS"])
-FAISS_DB_PATH = CONFIG["FAISS_DB_PATH"]
+CHUNKS_OUT_PATH_FAISS = Path(CONFIG["CHUNKS_OUT_PATH_FAISS_DPR"])
+FAISS_DB_PATH = CONFIG["FAISS_DB_PATH_DPR"]
 
 CHUNK_SIZE = CONFIG["CHUNK_SIZE"]
 CHUNK_LOWER_LIMIT = CONFIG["CHUNK_LOWER_LIMIT"]
