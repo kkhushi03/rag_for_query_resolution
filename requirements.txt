@@ -30,6 +30,8 @@ scikit-learn
 # transformers
 beautifulsoup4
 selenium
+rank-bm25
+nltk
 
 # `pip install -U langchain-chroma`
 # `pip install "unstructured[md]"`
