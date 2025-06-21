@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Dict, Any
 from utils.config import CONFIG
 from utils.logger import setup_logger
-from rag_pipeline_faiss.stage_02_query_data import query_rag
+from rag_pipeline_dpr.stage_02_query_data import query_rag
 from utils.evaluation.get_retrieval_eval_metrics import calc_all_retrieval_scores
 from utils.evaluation.get_generation_eval_metrics import calc_all_generation_scores
 from utils.evaluation.save_n_update_results import append_new_results_to_csv
@@ -12,7 +12,7 @@ from utils.evaluation.save_n_update_results import append_new_results_to_csv
 
 # configurations
 LOG_PATH = Path(CONFIG["LOG_PATH"])
-FAISS_DB_PATH = CONFIG["FAISS_DB_PATH"]
+FAISS_DB_PATH = CONFIG["FAISS_DB_PATH_DPR"]
 EVALUATION_DATA_PATHS = CONFIG.get("EVALUATION_DATA_PATHS", [])
 RESULTS_CSV_PATH = CONFIG.get("RESULTS_CSV_PATH", "evaluation_results.csv")
 
