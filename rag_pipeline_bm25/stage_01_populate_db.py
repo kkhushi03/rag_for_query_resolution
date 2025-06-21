@@ -1,16 +1,18 @@
-import os, json, pickle, shutil, gc, traceback
+import os, json, pickle, shutil, gc, traceback, re
 from tqdm import tqdm
 from pathlib import Path
-from utils.config import CONFIG
-from utils.logger import setup_logger
-from utils.get_llm_func import num_tokens
 from typing import List
 from rank_bm25 import BM25Okapi
 from langchain.schema import Document
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 
-# configurations
+from utils.config import CONFIG
+from utils.logger import setup_logger
+from utils.get_llm_func import num_tokens, rerank_results, llm_func, llm_gen_func
+from utils.get_prompt_temp import prompt_retrieval_grader, prompt_generate_answer
+
 LOG_PATH = Path(CONFIG["LOG_PATH"])
 DATA_PATH = Path(CONFIG["DATA_PATH"])
 GROUPED_DIRS = CONFIG["GROUPED_DIRS"]
@@ -24,8 +26,10 @@ CHUNK_LOWER_LIMIT = CONFIG["CHUNK_LOWER_LIMIT"]
 CHUNK_UPPER_LIMIT = CONFIG["CHUNK_UPPER_LIMIT"]
 CHUNK_OVERLAP = CONFIG["CHUNK_OVERLAP"]
 INGEST_BATCH_SIZE = CONFIG["INGEST_BATCH_SIZE"]
+K = CONFIG.get("K", 5)
+R = CONFIG.get("R", 5)
 
-LOG_DIR = os.path.join(os.getcwd(), LOG_PATH)
+LOG_DIR = os.path.join(os.getcwd(), str(LOG_PATH))
 os.makedirs(LOG_DIR, exist_ok=True)
 LOG_FILE = os.path.join(LOG_DIR, "stage_01_populate_bm25.log")
 
@@ -201,42 +205,46 @@ def process_in_batches(documents, ingest_batch_size: int, ingest_fn, logger):
             logger.debug(traceback.format_exc())
 
 def save_processed_chunks_metadata(chunks, chunks_dir, logger):
-    # Save successfully processed chunks metadata to JSON file for tracking
     try:
         logger.info(f"[Stage 01, Part 10.1.1] Saving processed chunks metadata to: {chunks_dir}")
         chunks_dir.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Read existing data first
-        existing_data = []
+
+        # Load existing chunk IDs to prevent duplicates
+        existing_ids = set()
         if os.path.exists(chunks_dir):
             with open(chunks_dir, "r", encoding="utf-8") as f:
                 for line in f:
                     try:
-                        existing_data.append(json.loads(line.strip()))
+                        data = json.loads(line.strip())
+                        chunk_id = data.get("metadata", {}).get("chunk_id")
+                        if chunk_id:
+                            existing_ids.add(chunk_id)
                     except json.JSONDecodeError:
                         continue
-        
-        # Append new chunks
+
+        # Append only new chunks
+        new_chunks = [chunk for chunk in chunks if chunk.metadata.get("chunk_id") not in existing_ids]
+        logger.info(f"[Stage 01, Part 10.1.2] New unique chunks to write: {len(new_chunks)}")
+
         with open(chunks_dir, "a", encoding="utf-8") as f:
-            for chunk in chunks:
+            for chunk in new_chunks:
                 chunk_data = {
-                    "content": chunk.page_content, 
+                    "page_content": chunk.page_content,
                     "metadata": chunk.metadata
                 }
                 f.write(json.dumps(chunk_data) + "\n")
-        
-        logger.info(f"[Stage 01, Part 10.1.2] Saved {len(chunks)} processed chunks to metadata file")
-        
+
+        logger.info(f"[Stage 01, Part 10.1.3] Successfully appended {len(new_chunks)} chunks")
+
     except Exception as e:
         logger.error(f"[Stage 01, Part 10.1] Error saving processed chunks metadata: {e}")
         logger.debug(traceback.format_exc())
-    
-    # Load existing chunks metadata from JSON file to track what's already processed
+
     try:
         if not os.path.exists(chunks_dir):
             logger.info(f"[Stage 01, Part 10.2.1] No existing chunks file found at {chunks_dir}")
             return set()
-        
+
         existing_ids = set()
         with open(chunks_dir, "r", encoding="utf-8") as f:
             for line in f:
@@ -247,14 +255,14 @@ def save_processed_chunks_metadata(chunks, chunks_dir, logger):
                         existing_ids.add(chunk_id)
                 except json.JSONDecodeError:
                     continue
-        
+
         logger.info(f"[Stage 01, Part 10.2.2] Loaded {len(existing_ids)} existing chunk IDs")
         return existing_ids
     except Exception as e:
         logger.error(f"[Stage 01, Part 10.2] Error loading existing chunks metadata: {e}")
         logger.debug(traceback.format_exc())
         return set()
-
+    
 # BM25-specific vectorization and saving
 
 def save_to_bm25_db(chunks: list[Document], bm25_db_path, bm25_metadata_path, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger):
@@ -312,29 +320,37 @@ def save_to_bm25_db(chunks: list[Document], bm25_db_path, bm25_metadata_path, ba
         logger.debug(traceback.format_exc())
 
 
-def run_populate_db_bm25(reset=False, bm25_db_dir=BM25_DB_DIR, bm25_db_path=BM25_DB_PATH, bm25_metadata_path=BM25_META_PATH, base_data_path=DATA_PATH, chunks_dir=CHUNKS_OUT_PATH_BM25, grouped_dirs=GROUPED_DIRS, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, ingest_batch_size=INGEST_BATCH_SIZE):
-    try:
-        logger = setup_logger("populate_bm25_logger", LOG_FILE)
-        logger.info("\n=== Starting BM25 DB population stage ===")
+def run_populate_db_bm25(reset=False):
+    logger = setup_logger("populate_bm25_logger", LOG_FILE)
+    logger.info("\n=== Starting BM25 DB population stage ===")
 
-        if reset:
-            clear_database(bm25_db_dir)
-            clear_chunks(chunks_dir)
+    if reset:
+        clear_database(BM25_DB_DIR)
+        clear_chunks(CHUNKS_OUT_PATH_BM25)
 
-        docs = load_docs(base_data_path, grouped_dirs, logger)
-        flat_docs = flatten_docs(docs, logger)
-        chunks = split_docs(flat_docs, chunk_size, chunk_overlap, logger)
+    if not reset and os.path.exists(BM25_DB_PATH) and os.path.exists(CHUNKS_OUT_PATH_BM25):
+        logger.info("BM25 DB and chunk metadata already exist. Skipping loading/splitting steps.")
+        return
 
-        save_to_bm25_db(chunks, bm25_db_path, bm25_metadata_path, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger)
+    docs = load_docs(DATA_PATH, GROUPED_DIRS, logger)
+    flat_docs = flatten_docs(docs, logger)
+    chunks = split_docs(flat_docs, CHUNK_SIZE, CHUNK_OVERLAP, logger)
 
-        del docs, flat_docs, chunks
-        gc.collect()
-        logger.info("=== BM25 DB population complete ===\n")
+    save_to_bm25_db(
+        chunks,
+        BM25_DB_PATH,
+        BM25_META_PATH,
+        DATA_PATH,
+        CHUNKS_OUT_PATH_BM25,
+        CHUNK_LOWER_LIMIT,
+        CHUNK_UPPER_LIMIT,
+        INGEST_BATCH_SIZE,
+        logger
+    )
 
-    except Exception as e:
-        logger.error(f"[Stage 01 - BM25] Fatal error: {e}")
-        logger.debug(traceback.format_exc())
-
+    del docs, flat_docs, chunks
+    gc.collect()
+    logger.info("=== BM25 DB population complete ===\n")
 
 if __name__ == "__main__":
     run_populate_db_bm25()

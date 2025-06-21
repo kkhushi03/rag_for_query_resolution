@@ -10,7 +10,7 @@ LOG_PATH: "logs"
 SOURCE_DATA_PATH: "artifacts/data/collected_data/"
 SOURCE_DIRS: ["arxiv", "pdfs", "core"]
 DATA_PATH: "artifacts/data/grouped_data/"
-GROUPED_DIRS: ["group_1"]
+GROUPED_DIRS: ["group_1","group_2","group_3","group_4","group_5","group_6","group_7","group_8","group_9","group_10","group_11","group_12","group_13",]
 
 CHROMA_DB_PATH: "chromadb"
 
@@ -22,13 +22,13 @@ TFIDF_DB_DIR: "VECTOR_STORES/tfidf"
 TFIDF_DB_PATH: "VECTOR_STORES/tfidf/tfidf_index.pkl"
 TFIDF_META_PATH: "VECTOR_STORES/tfidf/tfidf_metadata.json"
 
-QUERY_TEXT: "What is the main advantage of YieldNet over traditional single-crop yield prediction models using remote sensing data?"
+QUERY_TEXT: "what are the potentialities of Monte Carlo simulation for assessing soil water content via proximal gamma-ray spectroscopy?"
 EVALUATION_DATA_PATHS: "artifacts/data/evaluation_data/questions.json"
 RESULTS_CSV_PATH: "artifacts/results/evaluation_results.csv"
 
 CHUNK_SIZE: 512
 CHUNK_OVERLAP: 50
-CHUNK_LOWER_LIMIT: 100
+CHUNK_LOWER_LIMIT: 50
 CHUNK_UPPER_LIMIT: 500
 BATCH_SIZE: 64
 INGEST_BATCH_SIZE: 64
@@ -42,3 +42,4 @@ EMBEDDING_MODEL: "BAAI/bge-small-en"
 RE_RANK_MODEL: "cross-encoder/ms-marco-MiniLM-L-6-v2"
 LOCAL_LLM: "qwen3:0.6b"
 # LOCAL_LLM: "llama3.2"
+RETRIEVAL_METHOD: "bm25"  # or "tfidf" or "faiss"
