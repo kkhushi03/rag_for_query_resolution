@@ -16,6 +16,8 @@ requests
 tqdm
 lxml
 sentence-transformers
+transformers 
+torch
 tiktoken
 # hf_xet
 huggingface_hub[hf_xet]
