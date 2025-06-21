@@ -171,4 +171,4 @@ chromadb/
 chromadb/chroma.sqlite3
 
 VECTOR_STORES/
-VECTOR_STORES/tfidf/
+VECTOR_STORES/tfidf/artifacts/model_inferences/tfidf/chunks.jsonl
