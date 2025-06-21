@@ -164,6 +164,12 @@ cython_debug/
 artifacts/data/collected_data/
 artifacts/data/grouped_data/
 artifacts/data.zip
+artifacts/vectorstores/tfidf_index.pkl
+artifacts/vectorstores/tfidf_metadata.json
 
 chromadb/
 chromadb/chroma.sqlite3
+
+VECTOR_STORES/
+VECTOR_STORES/tfidf/artifacts/model_inferences/tfidf/chunks.jsonl
+artifacts/model_inferences/tfidf/chunks.jsonl

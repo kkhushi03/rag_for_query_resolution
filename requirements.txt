@@ -6,6 +6,7 @@ langchain-ollama
 # unstructured
 onnxruntime
 chromadb
+rank-bm25==0.2.2
 pymupdf
 pytest
 pyyaml
