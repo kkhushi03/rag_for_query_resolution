@@ -2,7 +2,10 @@ import os, json, pickle, shutil, gc, traceback
 from pathlib import Path
 from utils.config import CONFIG
 from utils.logger import setup_logger
-from utils.get_vectorizer_func import tfidf_vectorizer
+from rank_bm25 import BM25Okapi
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 from utils.get_population_func import (
     load_docs, flatten_docs, split_docs, calc_chunk_ids, load_existing_chunks_metadata, filter_chunks, process_in_batches, save_processed_chunks_metadata
 )
@@ -14,10 +17,10 @@ LOG_PATH = Path(CONFIG["LOG_PATH"])
 DATA_PATH = Path(CONFIG["DATA_PATH"])
 GROUPED_DIRS = CONFIG["GROUPED_DIRS"]
 
-CHUNKS_OUT_PATH_TFIDF = Path(CONFIG["CHUNKS_OUT_PATH_TFIDF"])
-TFIDF_DB_DIR = Path(CONFIG["TFIDF_DB_DIR"])
-TFIDF_DB_PATH = Path(CONFIG["TFIDF_DB_PATH"])
-TFIDF_META_PATH = Path(CONFIG["TFIDF_META_PATH"])
+CHUNKS_OUT_PATH_BM25 = Path(CONFIG["CHUNKS_OUT_PATH_BM25"])
+BM25_DB_DIR = Path(CONFIG["BM25_DB_DIR"])
+BM25_DB_PATH = Path(CONFIG["BM25_DB_PATH"])
+BM25_META_PATH = Path(CONFIG["BM25_META_PATH"])
 
 CHUNK_SIZE = CONFIG["CHUNK_SIZE"]
 CHUNK_LOWER_LIMIT = CONFIG["CHUNK_LOWER_LIMIT"]
@@ -30,10 +33,15 @@ LOG_DIR = os.path.join(os.getcwd(), LOG_PATH)
 os.makedirs(LOG_DIR, exist_ok=True)  # Create the logs directory if it doesn't exist
 LOG_FILE = os.path.join(LOG_DIR, "stage_01_populate_db.log")
 
+# Download required NLTK data (run once)
+# nltk.download('punkt')
+# nltk.download('punkt_tab')
+# nltk.download('stopwords')
 
-def save_to_tfidf_db(chunks: list[Document], tfidf_db_path, tfidf_metadata_path, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger):
+
+def save_to_bm25_db(chunks: list[Document], bm25_db_path, bm25_metadata_path, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger):
     try:
-        logger.info("[Stage 01, Part 06] Saving chunks to TF-IDF DB.....")
+        logger.info("[Stage 01, Part 06] Saving chunks to BM25 DB.....")
 
         # calculate "page:chunk" IDs
         # Step 1: Assign chunk IDs
@@ -90,30 +98,37 @@ def save_to_tfidf_db(chunks: list[Document], tfidf_db_path, tfidf_metadata_path,
         )
         logger.info(f"[Stage 01, Part 07] Collected {len(texts)} texts and {len(metadatas)} metadata entries from chunks")
 
-        # Step 7: Vectorize using TF-IDF
-        logger.info(f"[Stage 01, Part 08] Vectorizing {len(texts)} texts using TF-IDF...")
+        # Step 7: Vectorize using BM25
+        logger.info(f"[Stage 01, Part 08] Vectorizing {len(texts)} texts using BM25...")
         try:
-            tfidf = tfidf_vectorizer()
-            vectors = tfidf.fit_transform(texts)
-            logger.info(f"[Stage 01, Part 08] Vectorization complete. Shape of TF-IDF matrix: {vectors.shape}")
+            stop_words = set(stopwords.words('english'))
+            tokenized_texts = []
+            for text in texts:
+                tokens = word_tokenize(text.lower())
+                tokens = [token for token in tokens if token.isalnum() and token not in stop_words]
+                tokenized_texts.append(tokens)
+            
+            # Create BM25 index
+            bm25 = BM25Okapi(tokenized_texts)
+            logger.info(f"[Stage 01, Part 08] Vectorization complete. Shape of BM25 matrix: {len(tokenized_texts)}")
         except Exception as e:
-            logger.error(f"[Stage 01, Part 08] Error during TF-IDF vectorization: {e}")
+            logger.error(f"[Stage 01, Part 08] Error during BM25 vectorization: {e}")
             logger.debug(traceback.format_exc())
             return
 
-        # Step 8: Save vectors and metadata
-        logger.info(f"[Stage 01, Part 09] Saving TF-IDF DB to {tfidf_db_path} and metadata to {tfidf_metadata_path}...")
+        # Step 8: Save BM25 index and metadata
+        logger.info(f"[Stage 01, Part 09] Saving BM25 index to {bm25_db_path} and metadata to {bm25_metadata_path}...")
         try:
-            os.makedirs(os.path.dirname(tfidf_db_path), exist_ok=True)
-            with open(tfidf_db_path, "wb") as f:
-                pickle.dump((tfidf, vectors, texts), f)
+            os.makedirs(os.path.dirname(bm25_db_path), exist_ok=True)
+            with open(bm25_db_path, "wb") as f:
+                pickle.dump((bm25, texts, tokenized_texts), f)
 
-            with open(tfidf_metadata_path, "w", encoding="utf-8") as f:
+            with open(bm25_metadata_path, "w", encoding="utf-8") as f:
                 json.dump(metadatas, f, indent=2)
             
-            logger.info(f"[Stage 01, Part 09] TF-IDF DB and metadata saved successfully to {tfidf_db_path} and {tfidf_metadata_path}")
+            logger.info(f"[Stage 01, Part 09] BM25 index and metadata saved successfully")
         except Exception as e:
-            logger.error(f"[Stage 01, Part 09] Error saving TF-IDF DB or metadata: {e}")
+            logger.error(f"[Stage 01, Part 09] Error saving BM25 index or metadata: {e}")
             logger.debug(traceback.format_exc())
             return
 
@@ -125,15 +140,15 @@ def save_to_tfidf_db(chunks: list[Document], tfidf_db_path, tfidf_metadata_path,
         ]
         save_processed_chunks_metadata(reconstructed_docs, chunks_dir, logger)
         
-        logger.info("[Stage 01, Part 10] Chunks saved to TF-IDF DB successfully")
+        logger.info("[Stage 01, Part 10] Chunks saved to BM25 DB successfully")
     except Exception as e:
-        logger.error(f"[Stage 01, Part 10] Error saving to TF-IDF DB: {e}")
+        logger.error(f"[Stage 01, Part 10] Error saving to BM25 DB: {e}")
         logger.debug(traceback.format_exc())
         return []
 
-def clear_database(tfidf_db_dir):
-    if os.path.exists(tfidf_db_dir):
-        shutil.rmtree(tfidf_db_dir)
+def clear_database(bm25_db_dir):
+    if os.path.exists(bm25_db_dir):
+        shutil.rmtree(bm25_db_dir)
 
 def clear_chunks(chunks_dir):
     chunks_path = Path(chunks_dir)
@@ -143,7 +158,7 @@ def clear_chunks(chunks_dir):
         elif chunks_path.is_dir():
             shutil.rmtree(chunks_path)
 
-def run_populate_db(reset=False, tfidf_db_dir=TFIDF_DB_DIR, tfidf_db_path=TFIDF_DB_PATH, tfidf_metadata_path=TFIDF_META_PATH, base_data_path=DATA_PATH, chunks_dir=CHUNKS_OUT_PATH_TFIDF, grouped_dirs=GROUPED_DIRS, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, ingest_batch_size=INGEST_BATCH_SIZE):
+def run_populate_db(reset=False, bm25_db_dir=BM25_DB_DIR, bm25_db_path=BM25_DB_PATH, bm25_metadata_path=BM25_META_PATH, base_data_path=DATA_PATH, chunks_dir=CHUNKS_OUT_PATH_BM25, grouped_dirs=GROUPED_DIRS, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, lower_limit=CHUNK_LOWER_LIMIT, upper_limit=CHUNK_UPPER_LIMIT, ingest_batch_size=INGEST_BATCH_SIZE):
     try:
         logger = setup_logger("populate_db_logger", LOG_FILE)
         logger.info(" ")
@@ -152,7 +167,7 @@ def run_populate_db(reset=False, tfidf_db_dir=TFIDF_DB_DIR, tfidf_db_path=TFIDF_
         # check if the db should be cleared (using the --clear flag)
         if reset:
             logger.info("[Stage 01, Part 00.1] (RESET DB) Clearing the database...")
-            clear_database(tfidf_db_dir)
+            clear_database(bm25_db_dir)
             logger.info("[Stage 01, Part 00.1] (RESET DB) Database cleared successfully.")
             
             logger.info("[Stage 01, Part 00.2] (RESET DB) Clearing the chunks file...")
@@ -174,7 +189,7 @@ def run_populate_db(reset=False, tfidf_db_dir=TFIDF_DB_DIR, tfidf_db_path=TFIDF_
         
         logger.debug(f" [] Loaded {len(flat_docs)} docs, created {len(chunks)} chunks")
         
-        save_to_tfidf_db(chunks, tfidf_db_path, tfidf_metadata_path, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger)
+        save_to_bm25_db(chunks, bm25_db_path, bm25_metadata_path, base_data_path, chunks_dir, lower_limit, upper_limit, ingest_batch_size, logger)
         
         # Manual memory cleanup
         del docs, flat_docs, chunks

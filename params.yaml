@@ -25,6 +25,11 @@ TFIDF_DB_DIR: "VECTOR_STORES/tfidf"
 TFIDF_DB_PATH: "VECTOR_STORES/tfidf/tfidf_index.pkl"
 TFIDF_META_PATH: "VECTOR_STORES/tfidf/tfidf_metadata.json"
 
+CHUNKS_OUT_PATH_BM25: "VECTOR_STORES/model_inferences/bm25/chunks.jsonl"
+BM25_DB_DIR: "VECTOR_STORES/bm25"
+BM25_DB_PATH: "VECTOR_STORES/bm25/bm25_index.pkl"
+BM25_META_PATH: "VECTOR_STORES/bm25/bm25_metadata.json"
+
 QUERY_TEXT: "What depths were used for monitoring soil suction using the miniature tensiometer at the Boissy-le-Châtel site?"
 EVALUATION_DATA_PATHS: "artifacts/data/evaluation_data/questions.json"
 RESULTS_CSV_PATH: "artifacts/results/evaluation_results.csv"
