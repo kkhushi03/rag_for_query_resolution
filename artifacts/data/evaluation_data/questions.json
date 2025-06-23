@@ -3,9 +3,8 @@
         "question": "What depths were used for monitoring soil suction using the miniature tensiometer at the Boissy-le-Châtel site?",
         "ground_truth": "The miniature tensiometer was used to monitor in situ soil suction at two depths: 25 cm and 45 cm.",
         "relevant_doc_ids": [
-            "group_1/0801.2308v1.pdf:0:0", 
-            "group_1/0801.2308v1.pdf:7:0", 
-            "group_1/0801.2308v1.pdf:2:0"
+            "group_1/0801.2308v1.pdf:0:0"
+
         ],
         "difficulty": "med",
         "correctness": "True"

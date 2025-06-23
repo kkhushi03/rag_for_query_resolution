@@ -30,6 +30,15 @@ BM25_DB_DIR: "VECTOR_STORES/bm25"
 BM25_DB_PATH: "VECTOR_STORES/bm25/bm25_index.pkl"
 BM25_META_PATH: "VECTOR_STORES/bm25/bm25_metadata.json"
 
+CHUNKS_OUT_PATH_HYBRID: "VECTOR_STORES/model_inferences/hybrid/chunks.jsonl"
+HYBRID_FAISS_DB_DIR: "VECTOR_STORES/hybrid/faiss"
+HYBRID_BM25_DB_PATH: "VECTOR_STORES/hybrid/bm25/bm25_index.pkl"
+
+BM25_WEIGHT: 0.3
+FAISS_WEIGHT: 0.7
+HYBRID_TOP_K: 25
+RRF_PARAM: 60
+
 QUERY_TEXT: "What depths were used for monitoring soil suction using the miniature tensiometer at the Boissy-le-Châtel site?"
 EVALUATION_DATA_PATHS: "artifacts/data/evaluation_data/questions.json"
 RESULTS_CSV_PATH: "artifacts/results/evaluation_results.csv"
